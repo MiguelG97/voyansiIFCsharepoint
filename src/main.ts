@@ -44,11 +44,13 @@ postproduction.customEffects.excludedMeshes.push(
 const ifcLoader = new OBC.FragmentIfcLoader(
   viewer
 );
-await ifcLoader.setup();
 ifcLoader.settings.wasm = {
   absolute: true,
-  path: "https://unpkg.com/browse/web-ifc@0.0.40/",
+  path: "https://unpkg.com/web-ifc@0.0.44/",
 };
+
+await ifcLoader.setup();
+
 const highlighter = new OBC.FragmentHighlighter(
   viewer
 );
