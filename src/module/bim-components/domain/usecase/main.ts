@@ -118,23 +118,6 @@ mainToolbar.addChild(
 viewer.ui.addToolbar(mainToolbar);
 
 //6) event listeners
-// window.addEventListener(
-//   "thatOpen",
-//   async (event: any) => {
-//     const { name, payload } = event.detail;
-//     if (name === "openModel") {
-//       const { name, buffer } = payload;
-//       const model = await ifcLoader.load(
-//         buffer,
-//         name
-//       );
-//       const scene = viewer.scene.get();
-//       scene.add(model);
-//     }
-//   }
-// );
-
-//do not query inside the sharepoint context! query outside the event listener!
 let dataArray: {
   Name: string;
   URl: string;
@@ -198,6 +181,7 @@ loadBtn?.addEventListener(
       document.getElementsByClassName("ifcItem");
 
     for (const index in items) {
+      if (index === "length") break;
       console.log(
         (items[index] as HTMLElement)?.dataset
           .selected,
@@ -233,30 +217,16 @@ loadBtn?.addEventListener(
         break;
       }
     }
+
+    //shut down the modal
+    if (
+      modeListTool.uiElement.get("ifcModelsBtn")
+        .active
+    ) {
+      modeListTool.uiElement.get(
+        "ifcModelsBtn"
+      ).active = false;
+      modeListTool.toggleModalList(false);
+    }
   }
 );
-
-//store it on an object the ifc model name and the array buffer!
-// const items =
-//   document.getElementsByClassName("ifcItem");
-
-// for (const item of items) {
-//   const newItem = item as HTMLElement;
-//   // newItem.dataset.miguel = "hey";//to add default attribute
-//   newItem?.addEventListener("click", () => {
-//     for (const it of items) {
-//       (it as HTMLElement).dataset.selected =
-//         "false";
-//     }
-
-//     if (newItem.dataset.selected === "true") {
-//       newItem.dataset.selected = "false";
-//     } else if (
-//       newItem.dataset.selected === "false"
-//     ) {
-//       newItem.dataset.selected = "true";
-//     }
-//     console.log(newItem.dataset);
-//   });
-//   console.log(newItem.dataset);
-// }

@@ -33,7 +33,7 @@ export class IFCModelsTool
           !ifcModelsBtn.active;
 
         //ii) show custom panel container
-        this.showModalList(ifcModelsBtn);
+        this.toggleModalList(ifcModelsBtn.active);
       });
       this.uiElement.set({
         ifcModelsBtn: ifcModelsBtn,
@@ -41,15 +41,15 @@ export class IFCModelsTool
     }
   }
 
-  showModalList(ifcModelsBtn: OBC.Button) {
+  toggleModalList(active: boolean) {
     const ifcPanelContainer =
       document.getElementById(
         "IFC-panel-container"
       );
 
-    if (ifcModelsBtn.active) {
+    if (active) {
       ifcPanelContainer!.style.display = "flex";
-    } else if (!ifcModelsBtn.active) {
+    } else if (!active) {
       ifcPanelContainer!.style.display = "none";
     }
   }
