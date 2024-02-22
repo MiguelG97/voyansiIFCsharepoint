@@ -135,6 +135,7 @@ window.addEventListener(
         );
         console.log(url, fileName);
         if (url.includes(fileName)) {
+          console.log("the url is: " + URL);
           const fetched = await fetch(URL);
           const buffer =
             await fetched.arrayBuffer();
