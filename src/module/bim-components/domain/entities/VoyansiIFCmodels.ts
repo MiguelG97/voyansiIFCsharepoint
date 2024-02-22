@@ -12,13 +12,18 @@ export class IFCModelsTool
     // modalContainer: OBC.FloatingWindow;
     //https://github.com/IFCjs/components/blob/main/src/ifc/IfcPropertiesProcessor/index.ts
   }>();
-
-  constructor(components: OBC.Components) {
+  ifcPanelContainer?: HTMLElement;
+  constructor(
+    components: OBC.Components,
+    divContainer: HTMLElement | null
+  ) {
     super(components);
     components.tools.add(
       IFCModelsTool.uuid,
       this
     );
+    if (divContainer !== null)
+      this.ifcPanelContainer = divContainer;
 
     if (components.uiEnabled) {
       //Set UI:
@@ -43,15 +48,21 @@ export class IFCModelsTool
   }
 
   showModalList(ifcModelsBtn: OBC.Button) {
-    const panelContainer =
-      document.getElementById(
-        "IFC-panel-container"
-      );
+    const viewerDiv = document.getElementById(
+      "sharepoint-viewer-app"
+    );
+
     if (ifcModelsBtn.active) {
-      panelContainer!.style.display = "flex";
+      this.ifcPanelContainer!.style.display =
+        "flex";
     } else if (!ifcModelsBtn.active) {
-      panelContainer!.style.display = "none";
+      this.ifcPanelContainer!.style.display =
+        "none";
     }
+    console.log(
+      "error we are in sharepoint context!",
+      viewerDiv
+    );
   }
 
   readonly onDisposed = new OBC.Event<string>();

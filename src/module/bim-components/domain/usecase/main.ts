@@ -106,7 +106,12 @@ ifcLoader.onIfcLoaded.add(async (model) => {
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
 
-const modeListTool = new IFCModelsTool(viewer);
+const ifcPanelContainer: HTMLElement | null =
+  document.getElementById("IFC-panel-container");
+const modeListTool = new IFCModelsTool(
+  viewer,
+  ifcPanelContainer
+);
 
 mainToolbar.addChild(
   // ifcLoader.uiElement.get("main"),
@@ -134,20 +139,20 @@ viewer.ui.addToolbar(mainToolbar);
 //   }
 // );
 
+//do not query inside the sharepoint context! query outside the event listener!
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
     const { name, bufferArr } = event.detail;
     if (name === "loadIFCData") {
-      // document.getElementById(
-      //   "IFC-panel-container"
-      // )!.innerHTML =
-      //   "my array: " + bufferArr.length;
+      ifcPanelContainer!.innerHTML =
+        "my array: " + bufferArr.length;
       console.log(
         "my array: ",
         bufferArr.length,
+        document,
         document.getElementById(
-          "IFC-panel-container"
+          "sharepoint-viewer-app"
         )
       );
     }
