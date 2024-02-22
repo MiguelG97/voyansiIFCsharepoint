@@ -183,32 +183,36 @@ window.addEventListener(
 const loadBtn =
   document.getElementById("loadbutton");
 loadBtn?.addEventListener("click", async () => {
+  console.log(dataArray);
   const items =
     document.getElementsByClassName("ifcItem");
   for (const index in items) {
+    console.log(
+      (items[index] as HTMLElement).dataset
+        .selected
+    );
     if (
       ((
         items[index] as HTMLElement
       ).dataset.selected = "true")
     ) {
-      const data = dataArray[index];
-      console.log(data, dataArray);
-      const model = await ifcLoader.load(
-        data.buffer,
-        data.Name
-      );
-
-      const scene = viewer.scene.get();
-      for (
-        var i = scene.children.length - 1;
-        i >= 0;
-        i--
-      ) {
-        const obj = scene.children[i];
-        scene.remove(obj);
-      }
-      scene.add(model);
-      break;
+      // const data = dataArray[index];
+      // console.log(data, dataArray);
+      // const model = await ifcLoader.load(
+      //   data.buffer,
+      //   data.Name
+      // );
+      // const scene = viewer.scene.get();
+      // for (
+      //   var i = scene.children.length - 1;
+      //   i >= 0;
+      //   i--
+      // ) {
+      //   const obj = scene.children[i];
+      //   scene.remove(obj);
+      // }
+      // scene.add(model);
+      // break;
     }
   }
 });
