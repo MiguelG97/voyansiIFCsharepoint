@@ -146,7 +146,7 @@ window.addEventListener(
         );
 
       ifcPanelContainer!.innerHTML =
-        "my array: " + bufferArr.length;
+        "my array: " + bufferArr[0];
     }
   }
 );
