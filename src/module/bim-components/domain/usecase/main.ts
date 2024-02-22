@@ -1,6 +1,5 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
-import { IFCModelsTool } from "../entities/VoyansiIFCmodels";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -106,11 +105,11 @@ ifcLoader.onIfcLoaded.add(async (model) => {
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
 
-const modeListTool = new IFCModelsTool(viewer);
+// const modeListTool = new IFCModelsTool(viewer);
 
 mainToolbar.addChild(
   // ifcLoader.uiElement.get("main"),
-  modeListTool.uiElement.get("ifcModelsBtn"),
+  // modeListTool.uiElement.get("ifcModelsBtn"),
   propertiesProcessor.uiElement.get("main")
 );
 
@@ -118,115 +117,37 @@ mainToolbar.addChild(
 viewer.ui.addToolbar(mainToolbar);
 
 //6) event listeners
-let dataArray: {
-  Name: string;
-  URl: string;
-  // buffer: Uint8Array;
-}[] = [];
-
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
     const { name, dataArr } = event.detail;
     if (name === "loadIFCData") {
-      const ifcListDiv =
-        document.getElementById("ifcList");
-      dataArray = dataArr;
+      let url = window.location.href;
+      const texts = url.split("/");
+      url = texts[texts.length - 1];
 
       for (const item of dataArr) {
-        const { Name } = item;
-
-        const li = document.createElement("li");
-        li.innerHTML = Name;
-        li.dataset.selected = "false";
-        li.classList.add("ifcItem");
-        li.addEventListener(
-          "click",
-          (e: MouseEvent) => {
-            e.stopPropagation();
-
-            const items =
-              document.getElementsByClassName(
-                "ifcItem"
-              );
-            for (const it of items) {
-              (
-                it as HTMLElement
-              ).dataset.selected = "false";
-            }
-            if (li.dataset.selected === "true") {
-              li.dataset.selected = "false";
-            } else if (
-              li.dataset.selected === "false"
-            ) {
-              li.dataset.selected = "true";
-            }
-          }
+        const { Name, URL } = item;
+        const fileName = (Name as string).replace(
+          ".ifc",
+          ""
         );
-
-        ifcListDiv?.appendChild(li);
-      }
-    }
-  }
-);
-
-const loadBtn =
-  document.getElementById("loadbutton");
-loadBtn?.addEventListener(
-  "click",
-  async (e: MouseEvent) => {
-    e.stopPropagation();
-
-    const items =
-      document.getElementsByClassName("ifcItem");
-
-    for (const index in items) {
-      if (index === "length") break;
-      console.log(
-        (items[index] as HTMLElement)?.dataset
-          .selected,
-        items[index].innerHTML
-      );
-      if (
-        (items[index] as HTMLElement).dataset
-          .selected === "true"
-      ) {
-        const data = dataArray[index];
-        const fetched = await fetch(data.URl);
-        const buffer =
-          await fetched.arrayBuffer();
-        const bufferArray = new Uint8Array(
-          buffer
-        );
-        const model = await ifcLoader.load(
-          bufferArray,
-          data.Name
-        );
-        // console.log(model);
-        const scene = viewer.scene.get();
-        for (const modelChild of scene.children) {
-          if (
-            dataArray.some((x) =>
-              x.Name.includes(modelChild.name)
-            )
-          ) {
-            scene.remove(modelChild);
-          }
+        console.log(url, fileName);
+        if (url === fileName) {
+          const fetched = await fetch(URL);
+          const buffer =
+            await fetched.arrayBuffer();
+          const bufferArray = new Uint8Array(
+            buffer
+          );
+          const model = await ifcLoader.load(
+            bufferArray,
+            Name
+          );
+          const scene = viewer.scene.get();
+          scene.add(model);
         }
-        scene.add(model);
-        break;
       }
-    }
-
-    //shut down the modal
-    if (
-      modeListTool.uiElement.get("ifcModelsBtn")
-        .active
-    ) {
-      modeListTool.uiElement.get(
-        "ifcModelsBtn"
-      ).active = false;
-      modeListTool.toggleModalList(false);
     }
   }
 );
