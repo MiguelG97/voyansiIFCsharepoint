@@ -157,23 +157,29 @@ window.addEventListener(
         li.innerHTML = Name;
         li.dataset.selected = "false";
         li.classList.add("ifcItem");
-        li.addEventListener("click", () => {
-          const items =
-            document.getElementsByClassName(
-              "ifcItem"
-            );
-          for (const it of items) {
-            (it as HTMLElement).dataset.selected =
-              "false";
+        li.addEventListener(
+          "click",
+          (e: MouseEvent) => {
+            e.stopPropagation();
+
+            const items =
+              document.getElementsByClassName(
+                "ifcItem"
+              );
+            for (const it of items) {
+              (
+                it as HTMLElement
+              ).dataset.selected = "false";
+            }
+            if (li.dataset.selected === "true") {
+              li.dataset.selected = "false";
+            } else if (
+              li.dataset.selected === "false"
+            ) {
+              li.dataset.selected = "true";
+            }
           }
-          if (li.dataset.selected === "true") {
-            li.dataset.selected = "false";
-          } else if (
-            li.dataset.selected === "false"
-          ) {
-            li.dataset.selected = "true";
-          }
-        });
+        );
 
         ifcListDiv?.appendChild(li);
       }
@@ -194,37 +200,43 @@ loadBtn?.addEventListener(
     for (const index in items) {
       console.log(
         (items[index] as HTMLElement).dataset
-          .selected
+          .selected,
+        items[index].innerHTML
       );
       if (
         ((
           items[index] as HTMLElement
         ).dataset.selected = "true")
       ) {
-        const data = dataArray[index];
-        const fetched = await fetch(data.URl);
-        const buffer =
-          await fetched.arrayBuffer();
-        const bufferArray = new Uint8Array(
-          buffer
-        );
-
-        const model = await ifcLoader.load(
-          bufferArray,
-          data.Name
-        );
-        console.log(model);
-        const scene = viewer.scene.get();
-        for (
-          var i = scene.children.length - 1;
-          i >= 0;
-          i--
-        ) {
-          const obj = scene.children[i];
-          scene.remove(obj);
-        }
-        scene.add(model);
-        break;
+        // const data = dataArray[index];
+        // const fetched = await fetch(data.URl);
+        // const buffer =
+        //   await fetched.arrayBuffer();
+        // const bufferArray = new Uint8Array(
+        //   buffer
+        // );
+        // const model = await ifcLoader.load(
+        //   bufferArray,
+        //   data.Name
+        // );
+        // console.log(model);
+        // const scene = viewer.scene.get();
+        // for (
+        //   var i = scene.children.length - 1;
+        //   i >= 0;
+        //   i--
+        // ) {
+        //   const modelChild = scene.children[i];
+        //   if (
+        //     dataArray.some((x) =>
+        //       x.Name.includes(modelChild.name)
+        //     )
+        //   ) {
+        //     scene.remove(modelChild);
+        //   }
+        // }
+        // scene.add(model);
+        // break;
       }
     }
   }
