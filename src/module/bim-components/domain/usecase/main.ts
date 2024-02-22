@@ -144,7 +144,7 @@ window.addEventListener(
         document.getElementById(
           "IFC-panel-container"
         );
-
+      console.log(bufferArr);
       ifcPanelContainer!.innerHTML =
         "my array miguel: " +
         bufferArr[0].toString();
