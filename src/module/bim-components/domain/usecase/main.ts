@@ -160,6 +160,7 @@ window.addEventListener(
         li.addEventListener(
           "click",
           (e: MouseEvent) => {
+            console.log(e);
             e.stopPropagation();
 
             const items =
