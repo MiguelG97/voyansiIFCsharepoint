@@ -106,12 +106,7 @@ ifcLoader.onIfcLoaded.add(async (model) => {
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
 
-const ifcPanelContainer: HTMLElement | null =
-  document.getElementById("IFC-panel-container");
-const modeListTool = new IFCModelsTool(
-  viewer,
-  ifcPanelContainer
-);
+const modeListTool = new IFCModelsTool(viewer);
 
 mainToolbar.addChild(
   // ifcLoader.uiElement.get("main"),
@@ -145,16 +140,13 @@ window.addEventListener(
   async (event: CustomEventInit) => {
     const { name, bufferArr } = event.detail;
     if (name === "loadIFCData") {
+      const ifcPanelContainer =
+        document.getElementById(
+          "IFC-panel-container"
+        );
+
       ifcPanelContainer!.innerHTML =
         "my array: " + bufferArr.length;
-      console.log(
-        "my array: ",
-        bufferArr.length,
-        document,
-        document.getElementById(
-          "sharepoint-viewer-app"
-        )
-      );
     }
   }
 );

@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+  margin: 0;
+  padding: 0;
+}
+#sharepoint-viewer-app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.panelContainer {
+  @apply absolute w-[300px] h-[300px] text-white left-10 top-10 z-[1] rounded-md backdrop-blur-lg bg-[#000000bb] hidden;
+}
