@@ -137,7 +137,8 @@ viewer.ui.addToolbar(mainToolbar);
 //do not query inside the sharepoint context! query outside the event listener!
 let dataArray: {
   Name: string;
-  buffer: Uint8Array;
+  URl: string;
+  // buffer: Uint8Array;
 }[] = [];
 
 window.addEventListener(
@@ -201,22 +202,28 @@ loadBtn?.addEventListener(
         ).dataset.selected = "true")
       ) {
         const data = dataArray[index];
-        console.log(data.buffer);
+        const fetched = await fetch(data.URl);
+        const buffer =
+          await fetched.arrayBuffer();
+        const bufferArray = new Uint8Array(
+          buffer
+        );
+
         const model = await ifcLoader.load(
-          data.buffer,
+          bufferArray,
           data.Name
         );
         console.log(model);
-        // const scene = viewer.scene.get();
-        // for (
-        //   var i = scene.children.length - 1;
-        //   i >= 0;
-        //   i--
-        // ) {
-        //   const obj = scene.children[i];
-        //   scene.remove(obj);
-        // }
-        // scene.add(model);
+        const scene = viewer.scene.get();
+        for (
+          var i = scene.children.length - 1;
+          i >= 0;
+          i--
+        ) {
+          const obj = scene.children[i];
+          scene.remove(obj);
+        }
+        scene.add(model);
         break;
       }
     }
