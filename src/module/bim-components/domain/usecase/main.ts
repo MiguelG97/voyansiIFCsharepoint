@@ -192,10 +192,12 @@ loadBtn?.addEventListener("click", async () => {
       ).dataset.selected = "true")
     ) {
       const data = dataArray[index];
+      console.log(data, dataArray);
       const model = await ifcLoader.load(
         data.buffer,
         data.Name
       );
+
       const scene = viewer.scene.get();
       for (
         var i = scene.children.length - 1;
@@ -206,6 +208,7 @@ loadBtn?.addEventListener("click", async () => {
         scene.remove(obj);
       }
       scene.add(model);
+      break;
     }
   }
 });
