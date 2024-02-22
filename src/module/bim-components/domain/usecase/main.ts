@@ -139,10 +139,10 @@ window.addEventListener(
   async (event: CustomEventInit) => {
     const { name, bufferArr } = event.detail;
     if (name === "loadIFCData") {
-      document.getElementById(
-        "IFC-panel-container"
-      )!.innerHTML =
-        "my array: " + bufferArr.length;
+      // document.getElementById(
+      //   "IFC-panel-container"
+      // )!.innerHTML =
+      //   "my array: " + bufferArr.length;
       console.log(
         "my array: ",
         bufferArr.length,
