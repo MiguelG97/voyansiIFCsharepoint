@@ -135,11 +135,11 @@ viewer.ui.addToolbar(mainToolbar);
 // );
 
 //do not query inside the sharepoint context! query outside the event listener!
-// let dataArray: {
-//   Name: string;
-//   URl: string;
-//   // buffer: Uint8Array;
-// }[] = [];
+let dataArray: {
+  Name: string;
+  URl: string;
+  // buffer: Uint8Array;
+}[] = [];
 
 window.addEventListener(
   "loadIFCData",
@@ -148,7 +148,7 @@ window.addEventListener(
     if (name === "loadIFCData") {
       const ifcListDiv =
         document.getElementById("ifcList");
-      // dataArray = dataArr;
+      dataArray = dataArr;
 
       for (const item of dataArr) {
         const { Name } = item;
@@ -196,51 +196,42 @@ loadBtn?.addEventListener(
 
     const items =
       document.getElementsByClassName("ifcItem");
-    let int = 0;
+
     for (const index in items) {
       console.log(
         (items[index] as HTMLElement)?.dataset
           .selected,
-        items[index].innerHTML,
-        items[index],
-        index
+        items[index].innerHTML
       );
       if (
         (items[index] as HTMLElement).dataset
           .selected === "true"
       ) {
-        console.log("true attribute: ", int);
-        // const data = dataArray[index];
-        // const fetched = await fetch(data.URl);
-        // const buffer =
-        //   await fetched.arrayBuffer();
-        // const bufferArray = new Uint8Array(
-        //   buffer
-        // );
-        // const model = await ifcLoader.load(
-        //   bufferArray,
-        //   data.Name
-        // );
+        const data = dataArray[index];
+        const fetched = await fetch(data.URl);
+        const buffer =
+          await fetched.arrayBuffer();
+        const bufferArray = new Uint8Array(
+          buffer
+        );
+        const model = await ifcLoader.load(
+          bufferArray,
+          data.Name
+        );
         // console.log(model);
-        // const scene = viewer.scene.get();
-        // for (
-        //   var i = scene.children.length - 1;
-        //   i >= 0;
-        //   i--
-        // ) {
-        //   const modelChild = scene.children[i];
-        //   if (
-        //     dataArray.some((x) =>
-        //       x.Name.includes(modelChild.name)
-        //     )
-        //   ) {
-        //     scene.remove(modelChild);
-        //   }
-        // }
-        // scene.add(model);
-        // break;
+        const scene = viewer.scene.get();
+        for (const modelChild of scene.children) {
+          if (
+            dataArray.some((x) =>
+              x.Name.includes(modelChild.name)
+            )
+          ) {
+            scene.remove(modelChild);
+          }
+        }
+        scene.add(model);
+        break;
       }
-      int++;
     }
   }
 );
