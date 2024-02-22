@@ -143,7 +143,13 @@ window.addEventListener(
         "IFC-panel-container"
       )!.innerHTML =
         "my array: " + bufferArr.length;
-      console.log("my array: ", bufferArr.length);
+      console.log(
+        "my array: ",
+        bufferArr.length,
+        document.getElementById(
+          "IFC-panel-container"
+        )
+      );
     }
   }
 );
