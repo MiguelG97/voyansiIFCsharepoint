@@ -245,7 +245,8 @@ loadBtn?.addEventListener(
       }
       int++;
     }
-  }
+  },
+  true
 );
 
 //store it on an object the ifc model name and the array buffer!
