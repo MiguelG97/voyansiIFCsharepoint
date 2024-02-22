@@ -135,6 +135,11 @@ viewer.ui.addToolbar(mainToolbar);
 // );
 
 //do not query inside the sharepoint context! query outside the event listener!
+let dataArray: {
+  Name: string;
+  buffer: Uint8Array;
+}[] = [];
+
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
@@ -142,19 +147,90 @@ window.addEventListener(
     if (name === "loadIFCData") {
       const ifcListDiv =
         document.getElementById("ifcList");
-      console.log(
-        "miguel are you there??",
-        dataArr
-      );
+      dataArray = dataArr;
 
       for (const item of dataArr) {
         const { Name } = item;
+
         const li = document.createElement("li");
         li.innerHTML = Name;
+        li.dataset.selected = "false";
+        li.classList.add("ifcItem");
+        li.addEventListener("click", () => {
+          const items =
+            document.getElementsByClassName(
+              "ifcItem"
+            );
+          for (const it of items) {
+            (it as HTMLElement).dataset.selected =
+              "false";
+          }
+          if (li.dataset.selected === "true") {
+            li.dataset.selected = "false";
+          } else if (
+            li.dataset.selected === "false"
+          ) {
+            li.dataset.selected = "true";
+          }
+        });
 
         ifcListDiv?.appendChild(li);
       }
     }
   }
 );
+
+const loadBtn =
+  document.getElementById("loadbutton");
+loadBtn?.addEventListener("click", async () => {
+  const items =
+    document.getElementsByClassName("ifcItem");
+  for (const index in items) {
+    if (
+      ((
+        items[index] as HTMLElement
+      ).dataset.selected = "true")
+    ) {
+      const data = dataArray[index];
+      const model = await ifcLoader.load(
+        data.buffer,
+        data.Name
+      );
+      const scene = viewer.scene.get();
+      for (
+        var i = scene.children.length - 1;
+        i >= 0;
+        i--
+      ) {
+        const obj = scene.children[i];
+        scene.remove(obj);
+      }
+      scene.add(model);
+    }
+  }
+});
+
 //store it on an object the ifc model name and the array buffer!
+// const items =
+//   document.getElementsByClassName("ifcItem");
+
+// for (const item of items) {
+//   const newItem = item as HTMLElement;
+//   // newItem.dataset.miguel = "hey";//to add default attribute
+//   newItem?.addEventListener("click", () => {
+//     for (const it of items) {
+//       (it as HTMLElement).dataset.selected =
+//         "false";
+//     }
+
+//     if (newItem.dataset.selected === "true") {
+//       newItem.dataset.selected = "false";
+//     } else if (
+//       newItem.dataset.selected === "false"
+//     ) {
+//       newItem.dataset.selected = "true";
+//     }
+//     console.log(newItem.dataset);
+//   });
+//   console.log(newItem.dataset);
+// }
