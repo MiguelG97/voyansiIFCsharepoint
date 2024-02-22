@@ -160,7 +160,6 @@ window.addEventListener(
         li.addEventListener(
           "click",
           (e: MouseEvent) => {
-            console.log(e);
             e.stopPropagation();
 
             const items =
@@ -193,7 +192,6 @@ const loadBtn =
 loadBtn?.addEventListener(
   "click",
   async (e: MouseEvent) => {
-    e.stopImmediatePropagation();
     e.stopPropagation();
 
     const items =
@@ -208,9 +206,8 @@ loadBtn?.addEventListener(
         index
       );
       if (
-        ((
-          items[index] as HTMLElement
-        ).dataset.selected = "true")
+        (items[index] as HTMLElement).dataset
+          .selected === "true"
       ) {
         console.log("true attribute: ", int);
         // const data = dataArray[index];
@@ -245,8 +242,7 @@ loadBtn?.addEventListener(
       }
       int++;
     }
-  },
-  true
+  }
 );
 
 //store it on an object the ifc model name and the array buffer!
