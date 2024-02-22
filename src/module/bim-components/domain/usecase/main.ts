@@ -135,11 +135,11 @@ viewer.ui.addToolbar(mainToolbar);
 // );
 
 //do not query inside the sharepoint context! query outside the event listener!
-let dataArray: {
-  Name: string;
-  URl: string;
-  // buffer: Uint8Array;
-}[] = [];
+// let dataArray: {
+//   Name: string;
+//   URl: string;
+//   // buffer: Uint8Array;
+// }[] = [];
 
 window.addEventListener(
   "loadIFCData",
@@ -148,7 +148,7 @@ window.addEventListener(
     if (name === "loadIFCData") {
       const ifcListDiv =
         document.getElementById("ifcList");
-      dataArray = dataArr;
+      // dataArray = dataArr;
 
       for (const item of dataArr) {
         const { Name } = item;
@@ -192,22 +192,26 @@ const loadBtn =
 loadBtn?.addEventListener(
   "click",
   async (e: MouseEvent) => {
+    e.stopImmediatePropagation();
     e.stopPropagation();
 
-    console.log(dataArray);
     const items =
       document.getElementsByClassName("ifcItem");
+    let int = 0;
     for (const index in items) {
       console.log(
-        (items[index] as HTMLElement).dataset
+        (items[index] as HTMLElement)?.dataset
           .selected,
-        items[index].innerHTML
+        items[index].innerHTML,
+        items[index],
+        index
       );
       if (
         ((
           items[index] as HTMLElement
         ).dataset.selected = "true")
       ) {
+        console.log("true attribute: ", int);
         // const data = dataArray[index];
         // const fetched = await fetch(data.URl);
         // const buffer =
@@ -238,6 +242,7 @@ loadBtn?.addEventListener(
         // scene.add(model);
         // break;
       }
+      int++;
     }
   }
 );
