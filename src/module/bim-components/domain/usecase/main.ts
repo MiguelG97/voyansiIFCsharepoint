@@ -138,20 +138,23 @@ viewer.ui.addToolbar(mainToolbar);
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
-    const { name, bufferArr } = event.detail;
+    const { name, dataArr } = event.detail;
     if (name === "loadIFCData") {
-      const ifcPanelContainer =
-        document.getElementById(
-          "IFC-panel-container"
-        );
+      const ifcListDiv =
+        document.getElementById("ifcList");
       console.log(
         "miguel are you there??",
-        bufferArr
+        dataArr
       );
 
-      ifcPanelContainer!.innerHTML =
-        "my array miguel: " +
-        bufferArr[0].toString();
+      for (const item of dataArr) {
+        const { Name } = item;
+        const li = document.createElement("li");
+        li.innerHTML = Name;
+
+        ifcListDiv?.appendChild(li);
+      }
     }
   }
 );
+//store it on an object the ifc model name and the array buffer!

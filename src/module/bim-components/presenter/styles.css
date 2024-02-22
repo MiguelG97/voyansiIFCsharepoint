@@ -12,5 +12,10 @@
 }
 
 .panelContainer {
-  @apply absolute w-[300px] h-[300px] text-white left-10 top-10 z-[1] rounded-md backdrop-blur-lg bg-[#000000bb] hidden;
+  @apply absolute w-[300px] h-[300px] text-white left-10 
+  top-10 z-[1] rounded-md backdrop-blur-lg 
+  bg-[#000000bb]  flex flex-col p-4 gap-4;
+}
+.titleContainer {
+  @apply text-[24px] font-medium text-center;
 }
