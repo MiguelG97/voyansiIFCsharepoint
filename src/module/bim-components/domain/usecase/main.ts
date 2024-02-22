@@ -121,22 +121,23 @@ window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
     const { name, dataArr } = event.detail;
+    console.log(dataArr);
     if (name === "loadIFCData") {
       let url = window.location.href;
       const texts = url.split("/");
       url = texts[texts.length - 1];
-      url = url.replace(".ifc.aspx", "");
+      url = url.replace(".aspx", "");
 
       for (const item of dataArr) {
-        const { Name, Url } = item;
+        const { Name, URl } = item;
         const fileName = (Name as string).replace(
           ".ifc",
           ""
         );
         console.log(url, fileName);
         if (url.includes(fileName)) {
-          console.log("the url is: " + Url);
-          const fetched = await fetch(Url);
+          console.log("the url is: " + URl);
+          const fetched = await fetch(URl);
           const buffer =
             await fetched.arrayBuffer();
           const bufferArray = new Uint8Array(
