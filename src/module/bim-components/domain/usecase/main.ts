@@ -125,7 +125,7 @@ window.addEventListener(
       let url = window.location.href;
       const texts = url.split("/");
       url = texts[texts.length - 1];
-      url = url.replace(".aspx", "");
+      url = url.replace(".ifc.aspx", "");
 
       for (const item of dataArr) {
         const { Name, URL } = item;
@@ -134,7 +134,7 @@ window.addEventListener(
           ""
         );
         console.log(url, fileName);
-        if (url === fileName) {
+        if (url.includes(fileName)) {
           const fetched = await fetch(URL);
           const buffer =
             await fetched.arrayBuffer();
