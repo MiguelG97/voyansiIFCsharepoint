@@ -125,7 +125,7 @@ window.addEventListener(
       let url = window.location.href;
       const texts = url.split("/");
       url = texts[texts.length - 1];
-      url.replace(".aspx", "");
+      url = url.replace(".aspx", "");
 
       for (const item of dataArr) {
         const { Name, URL } = item;
