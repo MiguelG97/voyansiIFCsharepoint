@@ -128,15 +128,15 @@ window.addEventListener(
       url = url.replace(".ifc.aspx", "");
 
       for (const item of dataArr) {
-        const { Name, URL } = item;
+        const { Name, Url } = item;
         const fileName = (Name as string).replace(
           ".ifc",
           ""
         );
         console.log(url, fileName);
         if (url.includes(fileName)) {
-          console.log("the url is: " + URL);
-          const fetched = await fetch(URL);
+          console.log("the url is: " + Url);
+          const fetched = await fetch(Url);
           const buffer =
             await fetched.arrayBuffer();
           const bufferArray = new Uint8Array(
