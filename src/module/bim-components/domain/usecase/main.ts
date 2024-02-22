@@ -146,7 +146,8 @@ window.addEventListener(
         );
 
       ifcPanelContainer!.innerHTML =
-        "my array: " + bufferArr[0];
+        "my array miguel: " +
+        bufferArr[0].toString();
     }
   }
 );
