@@ -1,5 +1,8 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
+import { measurements } from "../../measurements/domain";
+import { navigation } from "../../plan-navigation/domain";
+import { FragmentsGroup } from "bim-fragment";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -54,6 +57,7 @@ postproduction.customEffects.excludedMeshes.push(
 const ifcLoader = new OBC.FragmentIfcLoader(
   viewer
 );
+
 ifcLoader.settings.wasm = {
   absolute: true,
   path: "https://unpkg.com/web-ifc@0.0.44/",
@@ -105,16 +109,30 @@ ifcLoader.onIfcLoaded.add(async (model) => {
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
 
-// const modeListTool = new IFCModelsTool(viewer);
-
 mainToolbar.addChild(
-  // ifcLoader.uiElement.get("main"),
-  // modeListTool.uiElement.get("ifcModelsBtn"),
+  ifcLoader.uiElement.get("main"),
   propertiesProcessor.uiElement.get("main")
 );
 
 //adding toolbar to the main component [viewer]
 viewer.ui.addToolbar(mainToolbar);
+//measurements
+measurements.init(viewer, viewerContainer);
+//navigation plans
+const plans = new OBC.FragmentPlans(viewer);
+mainToolbar.addChild(plans.uiElement.get("main"));
+ifcLoader.onIfcLoaded.add(
+  (model: FragmentsGroup) => {
+    navigation.fragmentPlanInit(
+      viewer,
+      model,
+      plans
+    );
+    // setTimeout(() => {
+    //   navigation.fragmentPlanInit(viewer);
+    // }, 2000);
+  }
+);
 
 //6) event listeners
 window.addEventListener(
