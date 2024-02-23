@@ -10,6 +10,39 @@
   height: 100vh;
   overflow: hidden;
 }
+:root {
+  --primary-color: #005991 !important;
+  /* --secondary-color: #ff9500 !important; */
+  --secondary-color: rgb(
+    230,
+    229,
+    229
+  ) !important;
+  --secondary-color-100: #ffffff !important;
+}
+#bottom-toolbar-container span {
+  color: black;
+}
+.obc-viewer
+  :is(
+    .data-\[active\=true\]\:text-black[data-active="true"]
+  )
+  .material-icons {
+  color: white !important;
+}
+
+#bottom-toolbar-container
+  button:hover
+  .material-icons {
+  color: white !important;
+}
+.obc-viewer :is(.text-white) {
+  color: black;
+}
+/* toast */
+.obc-viewer :is(.bg-ifcjs-200) {
+  background-color: white;
+}
 
 /* .panelContainer {
   @apply absolute w-[300px] h-[300px] text-white left-10 

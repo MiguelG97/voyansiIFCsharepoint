@@ -87,6 +87,7 @@ export const navigation = {
     // materialManager.addMeshes("white", meshes);
 
     await plans.computeAllPlanViews(model);
+
     plans.onNavigated.add(() => {
       //   rendererComponent.postproduction.customEffects.glossEnabled =
       //     false;

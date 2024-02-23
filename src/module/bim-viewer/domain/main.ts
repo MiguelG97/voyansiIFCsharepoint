@@ -12,9 +12,11 @@ const viewer = new OBC.Components();
 const sceneComponent = new OBC.SimpleScene(
   viewer
 );
+sceneComponent.get().background = new THREE.Color(
+  0xffffff
+);
 sceneComponent.setup();
 viewer.scene = sceneComponent;
-
 //2.2) Render
 const viewerContainer = document.getElementById(
   "sharepoint-viewer-app"
