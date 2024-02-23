@@ -120,37 +120,15 @@ viewer.ui.addToolbar(mainToolbar);
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
-    const { name, dataArr } = event.detail;
-    console.log(dataArr);
+    const { name, data } = event.detail;
+    console.log("event.detail.data: ", data);
     if (name === "loadIFCData") {
-      let url = window.location.href;
-      const texts = url.split("/");
-      url = texts[texts.length - 1];
-      url = url.replace(".aspx", "");
-
-      for (const item of dataArr) {
-        const { Name, URl } = item;
-        const fileName = (Name as string).replace(
-          ".ifc",
-          ""
-        );
-        console.log(url, fileName);
-        if (url.includes(fileName)) {
-          console.log("the url is: " + URl);
-          const fetched = await fetch(URl);
-          const buffer =
-            await fetched.arrayBuffer();
-          const bufferArray = new Uint8Array(
-            buffer
-          );
-          const model = await ifcLoader.load(
-            bufferArray,
-            Name
-          );
-          const scene = viewer.scene.get();
-          scene.add(model);
-        }
-      }
+      const model = await ifcLoader.load(
+        data.bufferArr,
+        data.Name
+      );
+      const scene = viewer.scene.get();
+      scene.add(model);
     }
   }
 );
