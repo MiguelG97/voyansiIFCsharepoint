@@ -8,6 +8,7 @@ import {
 } from "bim-fragment";
 import { MapBoxTool } from "./map-box/domain/mapBox_tool";
 import { LogLevel } from "web-ifc";
+import { frag_loader } from "./fragment-loader/domain";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -93,23 +94,23 @@ highlighter.events.select.onClear.add(() => {
   propertiesProcessor.cleanPropertiesList();
 });
 
-ifcLoader.onIfcLoaded.add(async (model) => {
-  // propertiesProcessor.process(model);
-  // highlighter.events.select.onHighlight.add(
-  //   (selection) => {
-  //     const fragmentID =
-  //       Object.keys(selection)[0];
-  //     const expressID = Number(
-  //       [...selection[fragmentID]][0]
-  //     );
-  //     propertiesProcessor.renderProperties(
-  //       model,
-  //       expressID
-  //     );
-  //   }
-  // );
-  // highlighter.updateHighlight();
-});
+// ifcLoader.onIfcLoaded.add(async (model) => {
+//   propertiesProcessor.process(model);
+//   highlighter.events.select.onHighlight.add(
+//     (selection) => {
+//       const fragmentID =
+//         Object.keys(selection)[0];
+//       const expressID = Number(
+//         [...selection[fragmentID]][0]
+//       );
+//       propertiesProcessor.renderProperties(
+//         model,
+//         expressID
+//       );
+//     }
+//   );
+//   highlighter.updateHighlight();
+// });
 
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
@@ -128,62 +129,12 @@ measurements.init(viewer, viewerContainer);
 const plans = new OBC.FragmentPlans(viewer);
 mainToolbar.addChild(plans.uiElement.get("main"));
 
-//load export
-//i)on local env
-ifcLoader.onIfcLoaded.add(
-  async (model: FragmentsGroup) => {
-    const data = fragManager.export(model);
-    const fragModel = await fragManager.load(
-      data
-    );
-    const properties: IfcProperties | undefined =
-      model.getLocalProperties();
-    if (properties !== undefined) {
-      fragModel.setLocalProperties(properties);
-      navigation.fragmentPlanInit(
-        viewer,
-        fragModel,
-        plans,
-        viewerContainer
-      );
-    }
-  }
-);
-
-//ii) on sharepoint!
-window.addEventListener(
-  "loadIFCData",
-  async (event: CustomEventInit) => {
-    const { name, data } = event.detail;
-    // console.log("event.detail.data: ", data);
-    if (name === "loadIFCData") {
-      const model = await ifcLoader.load(
-        data.bufferArr
-      );
-      model.name = data.Name;
-      const scene = viewer.scene.get();
-      scene.add(model);
-
-      //add it to fragment Manager!
-      const dataexported =
-        fragManager.export(model);
-      const fragModel = await fragManager.load(
-        dataexported
-      );
-      const properties:
-        | IfcProperties
-        | undefined = model.getLocalProperties();
-      if (properties !== undefined) {
-        fragModel.setLocalProperties(properties);
-        navigation.fragmentPlanInit(
-          viewer,
-          fragModel,
-          plans,
-          viewerContainer
-        );
-      }
-    }
-  }
+//load fragments
+frag_loader.initLoading(
+  ifcLoader,
+  fragManager,
+  viewer,
+  viewerContainer
 );
 
 //7) mapbox

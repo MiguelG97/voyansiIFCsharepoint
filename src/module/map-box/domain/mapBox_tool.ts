@@ -45,7 +45,9 @@ export class MapBoxTool
     const mapDiv = document.getElementById("map");
     mapDiv!.style.visibility = "visible";
 
-    mapboxUtils.initMapBox();
+    const coordinates =
+      await mapboxUtils.fetchCoordinates();
+    mapboxUtils.initMapBox(coordinates);
     //dispose viewer!!
     const fragManager = components.tools.get(
       OBC.FragmentManager
@@ -67,6 +69,8 @@ export class MapBoxTool
   readonly onDisposed = new OBC.Event<string>();
   async dispose() {
     //will trigger all the callbacks assigned to this event...??
+    mapboxUtils.unloadMapBox();
+
     await this.onDisposed.trigger(
       MapBoxTool.uuid
     );
