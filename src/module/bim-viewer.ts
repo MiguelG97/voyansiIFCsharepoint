@@ -2,8 +2,12 @@ import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { measurements } from "./measurements/domain";
 import { navigation } from "./plan-navigation/domain";
-import { FragmentsGroup } from "bim-fragment";
+import {
+  FragmentsGroup,
+  IfcProperties,
+} from "bim-fragment";
 import { MapBoxTool } from "./map-box/domain/mapBox_tool";
+import { LogLevel } from "web-ifc";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -56,8 +60,13 @@ postproduction.customEffects.excludedMeshes.push(
   grid.get()
 );
 
-//we use this for loading ifc as fragments, do not use the FragmentManager
+const culler = new OBC.ScreenCuller(viewer);
+await culler.setup();
 
+//we use this for loading ifc as fragments, do not use the FragmentManager
+const fragManager = new OBC.FragmentManager(
+  viewer
+);
 const ifcLoader = new OBC.FragmentIfcLoader(
   viewer
 );
@@ -66,6 +75,7 @@ ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN =
 ifcLoader.settings.webIfc.OPTIMIZE_PROFILES =
   true;
 ifcLoader.settings.wasm = {
+  logLevel: LogLevel.LOG_LEVEL_OFF,
   absolute: true,
   path: "https://unpkg.com/web-ifc@0.0.44/",
 };
@@ -77,14 +87,6 @@ const highlighter = new OBC.FragmentHighlighter(
 );
 await highlighter.setup();
 
-//there is an option to see only 2D screen of the elements that are not occluded
-const culler = new OBC.ScreenCuller(viewer);
-await culler.setup();
-cameraComponent.controls.addEventListener(
-  "sleep",
-  () => (culler.needsUpdate = true)
-);
-
 const propertiesProcessor =
   new OBC.IfcPropertiesProcessor(viewer);
 highlighter.events.select.onClear.add(() => {
@@ -92,25 +94,21 @@ highlighter.events.select.onClear.add(() => {
 });
 
 ifcLoader.onIfcLoaded.add(async (model) => {
-  for (const fragment of model.items) {
-    culler.add(fragment.mesh);
-  }
-  propertiesProcessor.process(model);
-  highlighter.events.select.onHighlight.add(
-    (selection) => {
-      const fragmentID =
-        Object.keys(selection)[0];
-      const expressID = Number(
-        [...selection[fragmentID]][0]
-      );
-      propertiesProcessor.renderProperties(
-        model,
-        expressID
-      );
-    }
-  );
-  highlighter.update();
-  culler.needsUpdate = true;
+  // propertiesProcessor.process(model);
+  // highlighter.events.select.onHighlight.add(
+  //   (selection) => {
+  //     const fragmentID =
+  //       Object.keys(selection)[0];
+  //     const expressID = Number(
+  //       [...selection[fragmentID]][0]
+  //     );
+  //     propertiesProcessor.renderProperties(
+  //       model,
+  //       expressID
+  //     );
+  //   }
+  // );
+  // highlighter.updateHighlight();
 });
 
 //5) UI: toolbar component and its buttons
@@ -125,37 +123,65 @@ mainToolbar.addChild(
 viewer.ui.addToolbar(mainToolbar);
 //measurements
 measurements.init(viewer, viewerContainer);
-//
 
 //navigation plans
 const plans = new OBC.FragmentPlans(viewer);
 mainToolbar.addChild(plans.uiElement.get("main"));
+
+//load export
+//i)on local env
 ifcLoader.onIfcLoaded.add(
-  (model: FragmentsGroup) => {
-    navigation.fragmentPlanInit(
-      viewer,
-      model,
-      plans
+  async (model: FragmentsGroup) => {
+    const data = fragManager.export(model);
+    const fragModel = await fragManager.load(
+      data
     );
-    // setTimeout(() => {
-    //   navigation.fragmentPlanInit(viewer);
-    // }, 2000);
+    const properties: IfcProperties | undefined =
+      model.getLocalProperties();
+    if (properties !== undefined) {
+      fragModel.setLocalProperties(properties);
+      navigation.fragmentPlanInit(
+        viewer,
+        fragModel,
+        plans,
+        viewerContainer
+      );
+    }
   }
 );
 
-//6) event listeners
+//ii) on sharepoint!
 window.addEventListener(
   "loadIFCData",
   async (event: CustomEventInit) => {
     const { name, data } = event.detail;
-    console.log("event.detail.data: ", data);
+    // console.log("event.detail.data: ", data);
     if (name === "loadIFCData") {
       const model = await ifcLoader.load(
-        data.bufferArr,
-        data.Name
+        data.bufferArr
       );
+      model.name = data.Name;
       const scene = viewer.scene.get();
       scene.add(model);
+
+      //add it to fragment Manager!
+      const dataexported =
+        fragManager.export(model);
+      const fragModel = await fragManager.load(
+        dataexported
+      );
+      const properties:
+        | IfcProperties
+        | undefined = model.getLocalProperties();
+      if (properties !== undefined) {
+        fragModel.setLocalProperties(properties);
+        navigation.fragmentPlanInit(
+          viewer,
+          fragModel,
+          plans,
+          viewerContainer
+        );
+      }
     }
   }
 );

@@ -1,108 +1,198 @@
 import { FragmentsGroup } from "bim-fragment";
 import * as OBC from "openbim-components";
-
+import * as THREE from "three";
 export const navigation = {
   fragmentPlanInit: async (
     viewer: OBC.Components,
     model: FragmentsGroup,
-    plans: OBC.FragmentPlans
+    plans: OBC.FragmentPlans,
+    viewerContainer: HTMLDivElement
   ) => {
-    // const clipper = new OBC.EdgesClipper(viewer);
-    // const sectionMaterial =
-    //   new THREE.LineBasicMaterial({
-    //     color: "black",
-    //   });
-    // const fillMaterial =
-    //   new THREE.MeshBasicMaterial({
-    //     color: "gray",
-    //     side: 2,
-    //   });
-    // const fillOutline =
-    //   new THREE.MeshBasicMaterial({
-    //     color: "black",
-    //     side: 1,
-    //     opacity: 0.5,
-    //     transparent: true,
-    //   });
-    // clipper.styles.create(
-    //   "filled",
-    //   new Set(),
-    //   sectionMaterial,
-    //   fillMaterial,
-    //   fillOutline
-    // );
-    // clipper.styles.create(
-    //   "projected",
-    //   new Set(),
-    //   sectionMaterial
-    // );
-    // const styles = clipper.styles.get();
-
-    // const rendererComponent =
-    //   viewer.renderer as OBC.PostproductionRenderer;
-    // rendererComponent.postproduction.customEffects.outlineEnabled =
-    //   true;
-
-    // const classifier = new OBC.FragmentClassifier(
-    //   viewer
-    // );
-    // const scene = viewer.scene.get();
-
-    // classifier.byEntity(model);
-    // classifier.byStorey(model);
-    // const found = classifier.find({
-    //   entities: [
-    //     "IFCWALLSTANDARDCASE",
-    //     "IFCWALL",
-    //   ],
-    // });
-    // const fragments = viewer.tools.get(
-    //   OBC.FragmentManager
-    // );
-    // for (const fragID in found) {
-    //   const { mesh } = fragments.list[fragID];
-    //   styles.filled.fragments[fragID] = new Set(
-    //     found[fragID]
-    //   );
-    //   styles.filled.meshes.add(mesh);
-    // }
-    // const meshes = [];
+    //Culler
+    const culler = viewer.tools.get(
+      OBC.ScreenCuller
+    );
+    viewerContainer.addEventListener(
+      "mouseup",
+      () => (culler.elements.needsUpdate = true)
+    );
+    viewerContainer.addEventListener(
+      "wheel",
+      () => (culler.elements.needsUpdate = true)
+    );
     // for (const fragment of model.items) {
-    //   const { mesh } = fragment;
-    //   meshes.push(mesh);
-    //   styles.projected.meshes.add(mesh);
+    //   culler.elements.add(fragment.mesh);
     // }
-
-    // const whiteColor = new THREE.Color("white");
-    // const whiteMaterial =
-    //   new THREE.MeshBasicMaterial({
-    //     color: whiteColor,
-    //   });
-    // const materialManager =
-    //   new OBC.MaterialManager(viewer);
-    // materialManager.addMaterial(
-    //   "white",
-    //   whiteMaterial
+    //should we add this??
+    // cameraComponent.controls.addEventListener(
+    //   "sleep",
+    //   () => (culler.needsUpdate = true)
     // );
-    // materialManager.addMeshes("white", meshes);
 
+    culler.elements.needsUpdate = true;
+
+    //Styling our floorplans
+    //should we check if this already exist from tools, other way just add a new instance
+    const clipper = new OBC.EdgesClipper(viewer);
+    const sectionMaterial =
+      new THREE.LineBasicMaterial({
+        color: "black",
+      });
+    const fillMaterial =
+      new THREE.MeshBasicMaterial({
+        color: "gray",
+        side: 2,
+      });
+    const fillOutline =
+      new THREE.MeshBasicMaterial({
+        color: "black",
+        side: 1,
+        opacity: 0.5,
+        transparent: true,
+      });
+
+    clipper.styles.create(
+      "filled",
+      new Set(),
+      sectionMaterial,
+      fillMaterial,
+      fillOutline
+    );
+    clipper.styles.create(
+      "projected",
+      new Set(),
+      sectionMaterial
+    );
+    const styles = clipper.styles.get();
+
+    // enable the outline effect to see the clipping outline
+    const postproduction = (
+      viewer.renderer as OBC.PostproductionRenderer
+    ).postproduction;
+    postproduction.customEffects.outlineEnabled =
+      true;
+
+    //apply the styles depending on the category
+    const classifier = new OBC.FragmentClassifier(
+      viewer
+    );
+    classifier.byEntity(model);
+    classifier.byStorey(model);
+    const found = classifier.find({
+      entities: [
+        "IFCWALLSTANDARDCASE",
+        "IFCWALL",
+      ],
+    });
+
+    //assign each geometry to its corresponding style
+    const fragments = viewer.tools.get(
+      OBC.FragmentManager
+    );
+    console.log(fragments.list); //issue here!! it was not loaded as frag manager! so there is no data here
+
+    for (const fragID in found) {
+      const fragid = fragments.list[fragID];
+      // console.log(fragid);
+      try {
+        const { mesh } = fragments.list[fragID];
+        styles.filled.fragments[fragID] = new Set(
+          found[fragID]
+        );
+        styles.filled.meshes.add(mesh);
+      } catch (error) {
+        console.log(error, fragid);
+      }
+    }
+
+    const meshes = [];
+    for (const fragment of model.items) {
+      const { mesh } = fragment;
+      meshes.push(mesh);
+      styles.projected.meshes.add(mesh);
+    }
+    //Global white material
+    const whiteColor = new THREE.Color("white");
+    const whiteMaterial =
+      new THREE.MeshBasicMaterial({
+        color: whiteColor,
+      });
+    const materialManager =
+      new OBC.MaterialManager(viewer);
+    materialManager.addMaterial(
+      "white",
+      whiteMaterial
+    );
+    materialManager.addMeshes("white", meshes);
+    //Generating the plans
     await plans.computeAllPlanViews(model);
 
+    //extra functionalities
+    const hider = new OBC.FragmentHider(viewer);
+    const highlighter = viewer.tools.get(
+      OBC.FragmentHighlighter
+    );
+
+    const highlightMat =
+      new THREE.MeshBasicMaterial({
+        depthTest: false,
+        color: 0xbcf124,
+        transparent: true,
+        opacity: 0.3,
+      });
+
+    highlighter.add("default", [highlightMat]);
+    const canvas =
+      viewer.renderer.get().domElement;
+    canvas.addEventListener("click", () =>
+      highlighter.clear("default")
+    );
+
+    highlighter.updateHighlight();
+    // And let's add these features to the floorplans as extra commands
+    plans.commands = {
+      Select: async (plan) => {
+        const found = await classifier.find({
+          storeys: [plan!.name],
+        });
+        highlighter.highlightByID(
+          "default",
+          found
+        );
+      },
+      Show: async (plan) => {
+        const found = await classifier.find({
+          storeys: [plan!.name],
+        });
+        hider.set(true, found);
+      },
+      Hide: async (plan) => {
+        const found = await classifier.find({
+          storeys: [plan!.name],
+        });
+        hider.set(false, found);
+      },
+    };
+
+    plans.updatePlansList();
+
+    //event navigation
     plans.onNavigated.add(() => {
-      //   rendererComponent.postproduction.customEffects.glossEnabled =
-      //     false;
-      //   materialManager.setBackgroundColor(
-      //     whiteColor
-      //   );
-      //   materialManager.set(true, ["white"]);
+      postproduction.customEffects.glossEnabled =
+        false;
+      materialManager.setBackgroundColor(
+        whiteColor
+      );
+      materialManager.set(true, ["white"]);
       viewer.tools.get(OBC.SimpleGrid).visible =
         false;
     });
+
     plans.onExited.add(() => {
-      //   rendererComponent.postproduction.customEffects.glossEnabled =
-      //     true;
-      //   materialManager.resetBackgroundColor();
-      //   materialManager.set(false, ["white"]);
+      postproduction.customEffects.glossEnabled =
+        true;
+      materialManager.resetBackgroundColor();
+      materialManager.set(false, ["white"]);
       viewer.tools.get(OBC.SimpleGrid).visible =
         true;
     });
