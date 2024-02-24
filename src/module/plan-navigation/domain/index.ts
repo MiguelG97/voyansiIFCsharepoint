@@ -1,6 +1,6 @@
 import { FragmentsGroup } from "bim-fragment";
 import * as OBC from "openbim-components";
-import * as THREE from "three";
+
 export const navigation = {
   fragmentPlanInit: async (
     viewer: OBC.Components,

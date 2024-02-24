@@ -57,9 +57,7 @@ postproduction.customEffects.excludedMeshes.push(
 );
 
 //we use this for loading ifc as fragments, do not use the FragmentManager
-const fragManager = new OBC.FragmentManager(
-  viewer
-);
+
 const ifcLoader = new OBC.FragmentIfcLoader(
   viewer
 );

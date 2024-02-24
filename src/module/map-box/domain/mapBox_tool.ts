@@ -47,16 +47,21 @@ export class MapBoxTool
 
     mapboxUtils.initMapBox();
     //dispose viewer!!
-    const ifcloader = components.tools.get(
+    const fragManager = components.tools.get(
       OBC.FragmentManager
     );
-    await ifcloader.dispose();
+    if (fragManager.isDisposeable()) {
+      //try removing measurements too!
+      await fragManager.dispose();
+    }
   }
 
   async unloadMapBoxGL() {
     const mapDiv = document.getElementById("map");
     mapDiv!.style.visibility = "hidden";
     mapboxUtils.unloadMapBox();
+
+    //load again the previous ifc model!!
   }
 
   readonly onDisposed = new OBC.Event<string>();
