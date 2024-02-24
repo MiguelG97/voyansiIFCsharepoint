@@ -5,10 +5,17 @@
   margin: 0;
   padding: 0;
 }
-#sharepoint-viewer-app {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+
+#sharepoint-viewer-app,
+#map {
+  width: calc(100vw - 8px);
+  height: calc(100vh - 8px);
+  /* width: 100vw;
+  height: 100vh; */
+}
+#map {
+  position: absolute !important;
+  visibility: hidden;
 }
 :root {
   --primary-color: #005991 !important;
@@ -19,6 +26,8 @@
     229
   ) !important;
   --secondary-color-100: #ffffff !important;
+
+  --secondary-color-120: white !important;
 }
 #bottom-toolbar-container span {
   color: black;

@@ -1,8 +1,9 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
-import { measurements } from "../../measurements/domain";
-import { navigation } from "../../plan-navigation/domain";
+import { measurements } from "./measurements/domain";
+import { navigation } from "./plan-navigation/domain";
 import { FragmentsGroup } from "bim-fragment";
+import { MapBoxTool } from "./map-box/domain/mapBox_tool";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -56,10 +57,16 @@ postproduction.customEffects.excludedMeshes.push(
 );
 
 //we use this for loading ifc as fragments, do not use the FragmentManager
+const fragManager = new OBC.FragmentManager(
+  viewer
+);
 const ifcLoader = new OBC.FragmentIfcLoader(
   viewer
 );
-
+ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN =
+  true;
+ifcLoader.settings.webIfc.OPTIMIZE_PROFILES =
+  true;
 ifcLoader.settings.wasm = {
   absolute: true,
   path: "https://unpkg.com/web-ifc@0.0.44/",
@@ -120,6 +127,8 @@ mainToolbar.addChild(
 viewer.ui.addToolbar(mainToolbar);
 //measurements
 measurements.init(viewer, viewerContainer);
+//
+
 //navigation plans
 const plans = new OBC.FragmentPlans(viewer);
 mainToolbar.addChild(plans.uiElement.get("main"));
@@ -151,4 +160,10 @@ window.addEventListener(
       scene.add(model);
     }
   }
+);
+
+//7) mapbox
+const mapBoxTool = new MapBoxTool(viewer);
+mainToolbar.addChild(
+  mapBoxTool.uiElement.get("mapBoxbtn")
 );
