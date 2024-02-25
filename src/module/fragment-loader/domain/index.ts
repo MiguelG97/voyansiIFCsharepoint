@@ -5,8 +5,14 @@ import {
 import * as OBC from "openbim-components";
 import { navigation } from "../../plan-navigation/domain";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
-import { mapboxUtils } from "../../map-box/infra";
-import { CustomIFCLayer } from "../../map-box/domain/custom_IFC_layer";
+
+import { CustomIFCLayer } from "../../map-box/domain/entities/custom_IFC_layer";
+import {
+  addIFCModel,
+  findIFCModel,
+  updateIFCModel,
+} from "../data/repository/dexie";
+
 export const frag_loader = {
   initLoading: (
     ifcLoader: OBC.FragmentIfcLoader,
@@ -38,25 +44,41 @@ export const frag_loader = {
             viewer.tools.get(OBC.FragmentPlans),
             viewerContainer
           );
-        }
 
-        //export to gltf
-        const exporter = new GLTFExporter();
-        exporter.parse(
-          viewer.scene.get(),
-          (
-            gltf:
-              | ArrayBuffer
-              | { [key: string]: any }
-          ) => {
-            console.log("gltf exported: ", gltf);
-            //store the data using dexie
-            CustomIFCLayer.gltfData = gltf;
-          },
-          (err) => {
-            console.log(err);
+          //export to gltf
+          const exporter = new GLTFExporter();
+          const gltf:
+            | ArrayBuffer
+            | { [key: string]: any } =
+            await exporter.parseAsync(
+              viewer.scene.get()
+            );
+          CustomIFCLayer.gltfData = gltf;
+
+          // store the data using dexie
+          const modelName = "migueltest.ifc"; //on sharepoint we already have this data!!
+          const ifcModel = await findIFCModel(
+            modelName
+          );
+          if (ifcModel !== undefined) {
+            //on first load we can overwrite it!
+            updateIFCModel(
+              modelName,
+              data,
+              properties,
+              gltf
+            );
+          } else {
+            //this do not ovewrite! it place the same data with a different index
+            addIFCModel(
+              modelName,
+              data,
+              properties,
+              gltf
+            );
           }
-        );
+          console.log(ifcModel);
+        }
       }
     );
 

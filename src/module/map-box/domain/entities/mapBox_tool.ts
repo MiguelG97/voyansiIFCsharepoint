@@ -1,5 +1,5 @@
 import * as OBC from "openbim-components";
-import { mapboxUtils } from "../infra";
+import { mapboxUtils } from "../services";
 
 export class MapBoxTool
   extends OBC.Component<null>

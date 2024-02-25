@@ -1,6 +1,5 @@
 import mapboxgl from "mapbox-gl";
-import { CustomIFCLayer } from "../domain/custom_IFC_layer";
-import { arrayBuffer } from "three/examples/jsm/nodes/Nodes.js";
+import { CustomIFCLayer } from "../entities/custom_IFC_layer";
 
 let map: mapboxgl.Map | null = null;
 export const mapboxUtils = {

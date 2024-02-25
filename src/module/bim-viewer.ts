@@ -1,12 +1,8 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { measurements } from "./measurements/domain";
-import { navigation } from "./plan-navigation/domain";
-import {
-  FragmentsGroup,
-  IfcProperties,
-} from "bim-fragment";
-import { MapBoxTool } from "./map-box/domain/mapBox_tool";
+
+import { MapBoxTool } from "./map-box/domain/entities/mapBox_tool";
 import { LogLevel } from "web-ifc";
 import { frag_loader } from "./fragment-loader/domain";
 
