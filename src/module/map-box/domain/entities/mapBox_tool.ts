@@ -1,5 +1,8 @@
 import * as OBC from "openbim-components";
-import { mapboxUtils } from "../services";
+import { mapboxUtils } from "../usecases";
+import { localStr } from "../../../../core/const";
+import { findIFCModel } from "../../../fragment-loader/data/repository/dexie";
+import { navigation } from "../../../plan-navigation/domain";
 
 export class MapBoxTool
   extends OBC.Component<null>
@@ -42,20 +45,38 @@ export class MapBoxTool
   }
 
   async loadMapBoxGL(components: OBC.Components) {
+    //Exit from navigation plans (do not dispose it, it remove the tool from toolbar)
+    const fragPlans = this.components.tools.get(
+      OBC.FragmentPlans
+    );
+    fragPlans.uiElement.get(
+      "floatingWindow"
+    ).visible = false;
+
+    fragPlans.exitPlanView();
+
+    //show map div element
     const mapDiv = document.getElementById("map");
     mapDiv!.style.visibility = "visible";
 
+    //initialize the map!
     const coordinates =
       await mapboxUtils.fetchCoordinates();
-    mapboxUtils.initMapBox(coordinates);
-    //dispose viewer!!
+    mapboxUtils.coordinates = coordinates;
+    await mapboxUtils.initializeMap();
+
+    //dispose the IFC model from the viewer!!
     const fragManager = components.tools.get(
       OBC.FragmentManager
     );
     if (fragManager.isDisposeable()) {
-      //try removing measurements too!
       await fragManager.dispose();
     }
+
+    //remove measurements too!
+    this.components.tools
+      .get(OBC.LengthMeasurement)
+      .deleteAll();
   }
 
   async unloadMapBoxGL() {
@@ -64,6 +85,41 @@ export class MapBoxTool
     mapboxUtils.unloadMapBox();
 
     //load again the previous ifc model!!
+    //get fragments and json props from dexie
+    const modelName = localStorage.getItem(
+      localStr.IFCmodelKey
+    );
+    if (modelName === null) return;
+    const modelData = await findIFCModel(
+      modelName
+    );
+    if (modelData === undefined) return;
+
+    const fragManager =
+      await this.components.tools.get(
+        OBC.FragmentManager
+      );
+
+    // const fragModel = await this.components.tools
+    //   .get(OBC.FragmentIfcLoader)
+    //   .load(modelData.);
+    const fragModel = await fragManager.load(
+      modelData.fragments
+    );
+    fragModel.setLocalProperties(
+      modelData.properties
+    );
+
+    //do I gotta start again the navigation plans? Yes!!
+    navigation.fragmentPlanInit(
+      this.components,
+      fragModel,
+      this.components.tools.get(
+        OBC.FragmentPlans
+      ),
+      this.components.ui
+        .viewerContainer as HTMLDivElement
+    );
   }
 
   readonly onDisposed = new OBC.Event<string>();

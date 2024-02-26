@@ -6,12 +6,13 @@ import * as OBC from "openbim-components";
 import { navigation } from "../../plan-navigation/domain";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 
-import { CustomIFCLayer } from "../../map-box/domain/entities/custom_IFC_layer";
 import {
   addIFCModel,
   findIFCModel,
   updateIFCModel,
 } from "../data/repository/dexie";
+import { localStr } from "../../../core/const";
+import { CustomIFCLayer } from "../../map-box/domain/entities/custom_IFC_layer";
 
 export const frag_loader = {
   initLoading: (
@@ -23,7 +24,10 @@ export const frag_loader = {
     //i)on local env [remove in production!]
     ifcLoader.onIfcLoaded.add(
       async (model: FragmentsGroup) => {
+        //export ifc to fragments
+
         const data = fragManager.export(model);
+        //load again the native fragments!
         const fragModel = await fragManager.load(
           data
         );
@@ -53,22 +57,56 @@ export const frag_loader = {
             await exporter.parseAsync(
               viewer.scene.get()
             );
-          CustomIFCLayer.gltfData = gltf;
+          //download gltf: debug purposes
+          // if (gltf instanceof ArrayBuffer) {
+          //   const link =
+          //     document.createElement("a");
+          //   const blob = new Blob([gltf]); //,);
+          //   link.href = URL.createObjectURL(blob);
+          //   link.download = "mydata.glb"; //different format??
+          //   link.dispatchEvent(
+          //     new MouseEvent("click")
+          //   );
+          // } else {
+          //   const output = JSON.stringify(
+          //     gltf,
+          //     null,
+          //     2
+          //   );
+          //   console.log("as json data", output);
+          //   const link =
+          //     document.createElement("a");
+          //   const blob = new Blob([output], {
+          //     type: "text/plain",
+          //   }); //,);
+          //   link.href = URL.createObjectURL(blob);
+          //   link.download = "mydata.gltf";
+          //   link.click();
+          // }
+
+          //store the model name in local storage
+          const modelName = "migueltest.ifc"; //on sharepoint we already have this data!!
+          localStorage.setItem(
+            localStr.IFCmodelKey,
+            modelName
+          );
+          // CustomIFCLayer.gltfData = gltf;
 
           // store the data using dexie
-          const modelName = "migueltest.ifc"; //on sharepoint we already have this data!!
           const ifcModel = await findIFCModel(
             modelName
           );
+          //on first load lets overwrite it!
           if (ifcModel !== undefined) {
-            //on first load we can overwrite it!
             updateIFCModel(
               modelName,
               data,
               properties,
               gltf
             );
-          } else {
+          }
+          //if not found, create a new instance for this one
+          else {
             //this do not ovewrite! it place the same data with a different index
             addIFCModel(
               modelName,
@@ -77,7 +115,6 @@ export const frag_loader = {
               gltf
             );
           }
-          console.log(ifcModel);
         }
       }
     );
@@ -115,6 +152,45 @@ export const frag_loader = {
               viewer.tools.get(OBC.FragmentPlans),
               viewerContainer
             );
+
+            //export to gltf
+            const exporter = new GLTFExporter();
+            const gltf:
+              | ArrayBuffer
+              | { [key: string]: any } =
+              await exporter.parseAsync(
+                viewer.scene.get()
+              );
+
+            localStorage.setItem(
+              localStr.IFCmodelKey,
+              data.Name
+            );
+            // CustomIFCLayer.gltfData = gltf;
+
+            // store the data using dexie
+            const ifcModel = await findIFCModel(
+              data.Name
+            );
+            //on first load lets overwrite it!
+            if (ifcModel !== undefined) {
+              updateIFCModel(
+                data.Name,
+                data,
+                properties,
+                gltf
+              );
+            }
+            //if not found, create a new instance for this one
+            else {
+              //this do not ovewrite! it place the same data with a different index
+              addIFCModel(
+                data.Name,
+                data,
+                properties,
+                gltf
+              );
+            }
           }
         }
       }

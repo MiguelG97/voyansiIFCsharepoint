@@ -33,7 +33,10 @@ export const navigation = {
 
     //Styling our floorplans
     //should we check if this already exist from tools, other way just add a new instance
-    const clipper = new OBC.EdgesClipper(viewer);
+    let clipper = viewer.tools.get(
+      OBC.EdgesClipper
+    );
+    // const clipper = new OBC.EdgesClipper(viewer);
     const sectionMaterial =
       new THREE.LineBasicMaterial({
         color: "black",
@@ -73,8 +76,8 @@ export const navigation = {
       true;
 
     //apply the styles depending on the category
-    const classifier = new OBC.FragmentClassifier(
-      viewer
+    let classifier = viewer.tools.get(
+      OBC.FragmentClassifier
     );
     classifier.byEntity(model);
     classifier.byStorey(model);
@@ -89,7 +92,7 @@ export const navigation = {
     const fragments = viewer.tools.get(
       OBC.FragmentManager
     );
-    console.log(fragments.list); //issue here!! it was not loaded as frag manager! so there is no data here
+    // console.log(fragments.list); //issue here!! it was not loaded as frag manager! so there is no data here
 
     for (const fragID in found) {
       const fragid = fragments.list[fragID];
@@ -111,24 +114,36 @@ export const navigation = {
       meshes.push(mesh);
       styles.projected.meshes.add(mesh);
     }
+
     //Global white material
     const whiteColor = new THREE.Color("white");
     const whiteMaterial =
       new THREE.MeshBasicMaterial({
         color: whiteColor,
       });
-    const materialManager =
-      new OBC.MaterialManager(viewer);
-    materialManager.addMaterial(
-      "white",
-      whiteMaterial
+    let materialManager = viewer.tools.get(
+      OBC.MaterialManager
     );
+    const matsCreated = materialManager.get(); //array of material names!
+    const isWhiteMatCreated = matsCreated.map(
+      (x) => x === "white"
+    );
+    if (isWhiteMatCreated.length === 0) {
+      materialManager.addMaterial(
+        "white",
+        whiteMaterial
+      );
+    }
     materialManager.addMeshes("white", meshes);
+
     //Generating the plans
     await plans.computeAllPlanViews(model);
 
     //extra functionalities
-    const hider = new OBC.FragmentHider(viewer);
+    const hider = viewer.tools.get(
+      OBC.FragmentHider
+    ); //new OBC.FragmentHider(viewer);
+
     const highlighter = viewer.tools.get(
       OBC.FragmentHighlighter
     );
@@ -140,8 +155,12 @@ export const navigation = {
         transparent: true,
         opacity: 0.3,
       });
+    const highlightmats =
+      highlighter.highlightMats;
+    if (highlightmats.default === undefined) {
+      highlighter.add("default", [highlightMat]);
+    }
 
-    highlighter.add("default", [highlightMat]);
     const canvas =
       viewer.renderer.get().domElement;
     canvas.addEventListener("click", () =>

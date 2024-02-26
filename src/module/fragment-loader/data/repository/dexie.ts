@@ -11,9 +11,9 @@ export const addIFCModel = async (
   gltf: ArrayBuffer | { [key: string]: any }
 ) => {
   try {
-    //stringify the properties??
+    //stringify the properties?? not neccesary
 
-    const id = await IFCdb.models.add({
+    await IFCdb.models.add({
       name,
       fragments,
       properties,
@@ -66,7 +66,7 @@ export const updateIFCModel = async (
     const numberX = await IFCdb.models.update(
       model.id!,
       {
-        name: "1" + modelName,
+        name: modelName,
         fragments,
         properties,
         gltf,
