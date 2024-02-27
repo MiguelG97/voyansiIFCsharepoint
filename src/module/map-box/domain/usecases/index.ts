@@ -87,28 +87,28 @@ export abstract class mapboxUtils {
     });
   }
 
-  static async fetchCoordinates(): Promise<mapboxgl.LngLatLike> {
-    let lng;
-    let lat;
-    let coordinates: mapboxgl.LngLatLike;
-    if (
-      localStorage.getItem("coordinates") &&
-      localStorage.getItem("coordinates") !== null
-    ) {
-      const coordinatesData = JSON.parse(
-        localStorage.getItem("coordinates")!
-      );
-      lng = coordinatesData[0];
-      lat = coordinatesData[1];
-      coordinates = new mapboxgl.LngLat(lng, lat);
-    } else {
-      // read ifc file data!!
-      lng = -77.029499;
-      lat = -12.120621;
-      coordinates = new mapboxgl.LngLat(lng, lat);
-    }
-    return coordinates;
-  }
+  // static async fetchCoordinates(): Promise<mapboxgl.LngLatLike> {
+  //   let lng;
+  //   let lat;
+  //   let coordinates: mapboxgl.LngLatLike;
+  //   if (
+  //     localStorage.getItem("coordinates") &&
+  //     localStorage.getItem("coordinates") !== null
+  //   ) {
+  //     const coordinatesData = JSON.parse(
+  //       localStorage.getItem("coordinates")!
+  //     );
+  //     lng = coordinatesData[0];
+  //     lat = coordinatesData[1];
+  //     coordinates = new mapboxgl.LngLat(lng, lat);
+  //   } else {
+  //     // read ifc file data!!
+  //     lng = -77.029499;
+  //     lat = -12.120621;
+  //     coordinates = new mapboxgl.LngLat(lng, lat);
+  //   }
+  //   return coordinates;
+  // }
 
   static unloadMapBox() {
     mapboxUtils.map.remove();

@@ -60,9 +60,9 @@ export class MapBoxTool
     mapDiv!.style.visibility = "visible";
 
     //initialize the map!
-    const coordinates =
-      await mapboxUtils.fetchCoordinates();
-    mapboxUtils.coordinates = coordinates;
+    // const coordinates =
+    //   await mapboxUtils.fetchCoordinates();
+    // mapboxUtils.coordinates = coordinates;
     await mapboxUtils.initializeMap();
 
     //dispose the IFC model from the viewer!!

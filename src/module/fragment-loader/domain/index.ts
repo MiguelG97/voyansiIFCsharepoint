@@ -5,14 +5,16 @@ import {
 import * as OBC from "openbim-components";
 import { navigation } from "../../plan-navigation/domain";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
-
+import * as THREE from "three";
 import {
   addIFCModel,
   findIFCModel,
   updateIFCModel,
 } from "../data/repository/dexie";
 import { localStr } from "../../../core/const";
-import { CustomIFCLayer } from "../../map-box/domain/entities/custom_IFC_layer";
+import { Mifcprops } from "../../ifc-properties/domain";
+import { mapboxUtils } from "../../map-box/domain/usecases";
+import mapboxgl from "mapbox-gl";
 
 export const frag_loader = {
   initLoading: (
@@ -24,8 +26,11 @@ export const frag_loader = {
     //i)on local env [remove in production!]
     ifcLoader.onIfcLoaded.add(
       async (model: FragmentsGroup) => {
-        //export ifc to fragments
+        await viewer.tools
+          .get(OBC.IfcPropertiesProcessor)
+          .process(model);
 
+        //export ifc to fragments
         const data = fragManager.export(model);
         //load again the native fragments!
         const fragModel = await fragManager.load(
@@ -37,11 +42,31 @@ export const frag_loader = {
           | IfcProperties
           | undefined =
           model.getLocalProperties();
+
         if (properties !== undefined) {
+          //fetch ifc coordinates
+          const modelCoordinates =
+            await Mifcprops.getIFCcoordinates(
+              properties,
+              model
+            );
+          if (modelCoordinates === null) {
+            alert(
+              "no coordinates found on ifc file!"
+            );
+            return;
+          }
+          const lat = modelCoordinates[0];
+          const long = modelCoordinates[1];
+          mapboxUtils.coordinates =
+            new mapboxgl.LngLat(long, lat);
+
+          //load properties to fragments
           fragModel.setLocalProperties(
             properties
           );
 
+          //init navigation plan
           navigation.fragmentPlanInit(
             viewer,
             fragModel,
@@ -84,7 +109,19 @@ export const frag_loader = {
           //   link.click();
           // }
 
+          //download properties
+          // const link =
+          //   document.createElement("a");
+          // const blob = new Blob(
+          //   [JSON.stringify(properties)],
+          //   { type: "text/plain" }
+          // );
+          // link.href = URL.createObjectURL(blob);
+          // link.download = "PPM-5305_SC-R23.json";
+          // link.click();
+
           //store the model name in local storage
+
           const modelName = "migueltest.ifc"; //on sharepoint we already have this data!!
           localStorage.setItem(
             localStr.IFCmodelKey,
@@ -142,7 +179,24 @@ export const frag_loader = {
             | IfcProperties
             | undefined =
             model.getLocalProperties();
+
           if (properties !== undefined) {
+            const modelCoordinates =
+              await Mifcprops.getIFCcoordinates(
+                properties,
+                model
+              );
+            if (modelCoordinates === null) {
+              alert(
+                "no coordinates found on ifc file!"
+              );
+              return;
+            }
+            const lat = modelCoordinates[0];
+            const long = modelCoordinates[1];
+            mapboxUtils.coordinates =
+              new mapboxgl.LngLat(long, lat);
+
             fragModel.setLocalProperties(
               properties
             );
@@ -176,7 +230,7 @@ export const frag_loader = {
             if (ifcModel !== undefined) {
               updateIFCModel(
                 data.Name,
-                data,
+                dataexported,
                 properties,
                 gltf
               );
@@ -186,7 +240,7 @@ export const frag_loader = {
               //this do not ovewrite! it place the same data with a different index
               addIFCModel(
                 data.Name,
-                data,
+                dataexported,
                 properties,
                 gltf
               );

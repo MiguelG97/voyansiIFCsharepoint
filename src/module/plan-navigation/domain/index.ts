@@ -95,8 +95,7 @@ export const navigation = {
     // console.log(fragments.list); //issue here!! it was not loaded as frag manager! so there is no data here
 
     for (const fragID in found) {
-      const fragid = fragments.list[fragID];
-      // console.log(fragid);
+      // const fragid = fragments.list[fragID];
       try {
         const { mesh } = fragments.list[fragID];
         styles.filled.fragments[fragID] = new Set(
@@ -104,7 +103,10 @@ export const navigation = {
         );
         styles.filled.meshes.add(mesh);
       } catch (error) {
-        console.log(error, fragid);
+        console.log(
+          error,
+          "thefragid is: " + fragID
+        );
       }
     }
 

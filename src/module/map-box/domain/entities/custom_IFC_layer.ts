@@ -117,6 +117,7 @@ export class CustomIFCLayer
     gl: WebGL2RenderingContext,
     matrix: Array<number>
   ) {
+    gl;
     const rotationX =
       new THREE.Matrix4().makeRotationAxis(
         new THREE.Vector3(1, 0, 0),
