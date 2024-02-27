@@ -8,7 +8,7 @@ export const measurements = {
       viewer
     );
     //settings
-    dimensions.enabled = true;
+    dimensions.enabled = false; //
 
     dimensions.snapDistance = 1;
 

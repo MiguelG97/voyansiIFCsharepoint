@@ -83,12 +83,10 @@ const highlighter = new OBC.FragmentHighlighter(
   viewer
 );
 await highlighter.setup();
+highlighter.outlineEnabled = true;
 
 const propertiesProcessor =
   new OBC.IfcPropertiesProcessor(viewer);
-highlighter.events.select.onClear.add(() => {
-  propertiesProcessor.cleanPropertiesList();
-});
 
 // ifcLoader.onIfcLoaded.add(async (model) => {
 //   propertiesProcessor.process(model);
@@ -112,7 +110,7 @@ highlighter.events.select.onClear.add(() => {
 const mainToolbar = new OBC.Toolbar(viewer);
 
 mainToolbar.addChild(
-  ifcLoader.uiElement.get("main"),
+  // ifcLoader.uiElement.get("main"),
   propertiesProcessor.uiElement.get("main")
 );
 

@@ -5,7 +5,7 @@ import {
 import * as OBC from "openbim-components";
 import { navigation } from "../../plan-navigation/domain";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
-import * as THREE from "three";
+// import * as THREE from "three";
 import {
   addIFCModel,
   findIFCModel,
@@ -26,9 +26,11 @@ export const frag_loader = {
     //i)on local env [remove in production!]
     ifcLoader.onIfcLoaded.add(
       async (model: FragmentsGroup) => {
-        await viewer.tools
-          .get(OBC.IfcPropertiesProcessor)
-          .process(model);
+        //render model properties
+        await Mifcprops.renderModelProperties(
+          viewer,
+          model
+        );
 
         //export ifc to fragments
         const data = fragManager.export(model);
@@ -169,6 +171,12 @@ export const frag_loader = {
           model.name = data.Name;
           const scene = viewer.scene.get();
           scene.add(model);
+
+          //render model properties
+          await Mifcprops.renderModelProperties(
+            viewer,
+            model
+          );
 
           //add it to fragment Manager! [store data in indexDB with dexie!!]
           const dataexported =
