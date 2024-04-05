@@ -52,26 +52,3 @@
 .obc-viewer :is(.bg-ifcjs-200) {
   background-color: white;
 }
-
-/* .panelContainer {
-  @apply absolute w-[300px] h-[300px] text-white left-10 
-  top-10 z-[1] rounded-md backdrop-blur-lg 
-  bg-[#000000bb]   flex-col p-4 gap-4 hidden;
-}
-.titleContainer {
-  @apply text-[24px] font-medium text-center;
-}
-
-#ifcList {
-  @apply flex flex-col    flex-1 overflow-y-auto;
-}
-.ifcItem {
-  @apply hover:bg-[#151b1c] px-4 py-1 data-[selected=true]:bg-[#1e2427] cursor-pointer;
-}
-#loadbutton {
-  @apply mx-4 rounded-md py-2 bg-[#222a32] px-4 text-center mb-2 cursor-pointer
-  hover:bg-[#2e3841] font-medium;
-}
-.hseparator {
-  @apply h-1  border-b-[1px] border-b-gray-400 mx-4;
-} */

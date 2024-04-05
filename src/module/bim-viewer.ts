@@ -5,6 +5,7 @@ import { measurements } from "./measurements/domain";
 import { MapBoxTool } from "./map-box/domain/entities/mapBox_tool";
 import { LogLevel } from "web-ifc";
 import { frag_loader } from "./fragment-loader/domain";
+import { MfragmentHightlighter } from "./fragment-highlighter/domain";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -42,6 +43,7 @@ viewer.raycaster = raycasterComponent;
 
 //3) initialize the main component [viewer]: animation loops, etc...
 await viewer.init();
+
 //extra setup:
 //enabling postproduction effect
 const postproduction =
@@ -79,32 +81,11 @@ ifcLoader.settings.wasm = {
 
 await ifcLoader.setup();
 
-const highlighter = new OBC.FragmentHighlighter(
-  viewer
-);
-await highlighter.setup();
-highlighter.outlineEnabled = true;
+new OBC.FragmentHighlighter(viewer);
+await MfragmentHightlighter.initialize(viewer);
 
 const propertiesProcessor =
   new OBC.IfcPropertiesProcessor(viewer);
-
-// ifcLoader.onIfcLoaded.add(async (model) => {
-//   propertiesProcessor.process(model);
-//   highlighter.events.select.onHighlight.add(
-//     (selection) => {
-//       const fragmentID =
-//         Object.keys(selection)[0];
-//       const expressID = Number(
-//         [...selection[fragmentID]][0]
-//       );
-//       propertiesProcessor.renderProperties(
-//         model,
-//         expressID
-//       );
-//     }
-//   );
-//   highlighter.updateHighlight();
-// });
 
 //5) UI: toolbar component and its buttons
 const mainToolbar = new OBC.Toolbar(viewer);
@@ -117,6 +98,7 @@ mainToolbar.addChild(
 //adding toolbar to the main component [viewer]
 viewer.ui.addToolbar(mainToolbar);
 //measurements
+new OBC.LengthMeasurement(viewer);
 measurements.init(viewer, viewerContainer);
 
 //navigation plans
@@ -130,6 +112,11 @@ frag_loader.initLoading(
   viewer,
   viewerContainer
 );
+
+// const ifcModelsTool = new IFCModelsTool(viewer);
+// mainToolbar.addChild(
+//   ifcModelsTool.uiElement.get("ifcModelsBtn")
+// );
 
 //7) mapbox
 const mapBoxTool = new MapBoxTool(viewer);

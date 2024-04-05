@@ -3,6 +3,7 @@ import { mapboxUtils } from "../usecases";
 import { localStr } from "../../../../core/const";
 import { findIFCModel } from "../../../fragment-loader/data/repository/dexie";
 import { navigation } from "../../../plan-navigation/domain";
+import { Mifcprops } from "../../../ifc-properties/domain";
 
 export class MapBoxTool
   extends OBC.Component<null>
@@ -108,6 +109,12 @@ export class MapBoxTool
     );
     fragModel.setLocalProperties(
       modelData.properties
+    );
+
+    //render model properties
+    await Mifcprops.renderModelProperties(
+      this.components,
+      fragModel
     );
 
     //do I gotta start again the navigation plans? Yes!!

@@ -78,9 +78,9 @@ export class Mifcprops {
     await propsProcessor.process(model);
 
     //bind highlighter logic to the properties processor
-    const fragments = viewer.tools.get(
-      OBC.FragmentManager
-    );
+    // const fragments = viewer.tools.get(
+    //   OBC.FragmentManager
+    // );
     const highlighter = viewer.tools.get(
       OBC.FragmentHighlighter
     );

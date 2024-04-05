@@ -4,8 +4,8 @@ export const measurements = {
     viewer: OBC.Components,
     viewerContainer: HTMLElement
   ) => {
-    const dimensions = new OBC.LengthMeasurement(
-      viewer
+    const dimensions = viewer.tools.get(
+      OBC.LengthMeasurement
     );
     //settings
     dimensions.enabled = false; //
@@ -30,6 +30,7 @@ export const measurements = {
         dimensions.delete();
       }
     };
+
     viewer.ui.toolbars[0].addChild(
       dimensions.uiElement.get("main")
     );
