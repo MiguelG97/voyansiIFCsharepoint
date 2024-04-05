@@ -70,9 +70,9 @@ export class MapBoxTool
     const fragManager = components.tools.get(
       OBC.FragmentManager
     );
-    if (fragManager.isDisposeable()) {
-      await fragManager.dispose();
-    }
+    // if (fragManager.isDisposeable()) {
+    //   await fragManager.dispose();
+    // }
 
     //remove measurements too!
     this.components.tools
@@ -87,46 +87,46 @@ export class MapBoxTool
 
     //load again the previous ifc model!!
     //get fragments and json props from dexie
-    const modelName = localStorage.getItem(
-      localStr.IFCmodelKey
-    );
-    if (modelName === null) return;
-    const modelData = await findIFCModel(
-      modelName
-    );
-    if (modelData === undefined) return;
+    // const modelName = localStorage.getItem(
+    //   localStr.IFCmodelKey
+    // );
+    // if (modelName === null) return;
+    // const modelData = await findIFCModel(
+    //   modelName
+    // );
+    // if (modelData === undefined) return;
 
-    const fragManager =
-      await this.components.tools.get(
-        OBC.FragmentManager
-      );
+    // const fragManager =
+    //   await this.components.tools.get(
+    //     OBC.FragmentManager
+    //   );
 
-    // const fragModel = await this.components.tools
-    //   .get(OBC.FragmentIfcLoader)
-    //   .load(modelData.);
-    const fragModel = await fragManager.load(
-      modelData.fragments
-    );
-    fragModel.setLocalProperties(
-      modelData.properties
-    );
+    // // const fragModel = await this.components.tools
+    // //   .get(OBC.FragmentIfcLoader)
+    // //   .load(modelData.);
+    // const fragModel = await fragManager.load(
+    //   modelData.fragments
+    // );
+    // fragModel.setLocalProperties(
+    //   modelData.properties
+    // );
 
-    //render model properties
-    await Mifcprops.renderModelProperties(
-      this.components,
-      fragModel
-    );
+    // //render model properties
+    // await Mifcprops.renderModelProperties(
+    //   this.components,
+    //   fragModel
+    // );
 
-    //do I gotta start again the navigation plans? Yes!!
-    navigation.fragmentPlanInit(
-      this.components,
-      fragModel,
-      this.components.tools.get(
-        OBC.FragmentPlans
-      ),
-      this.components.ui
-        .viewerContainer as HTMLDivElement
-    );
+    // //do I gotta start again the navigation plans? Yes!!
+    // navigation.fragmentPlanInit(
+    //   this.components,
+    //   fragModel,
+    //   this.components.tools.get(
+    //     OBC.FragmentPlans
+    //   ),
+    //   this.components.ui
+    //     .viewerContainer as HTMLDivElement
+    // );
   }
 
   readonly onDisposed = new OBC.Event<string>();

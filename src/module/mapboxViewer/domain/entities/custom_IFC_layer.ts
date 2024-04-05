@@ -14,6 +14,7 @@ export class CustomIFCLayer
   static gltfData:
     | ArrayBuffer
     | { [key: string]: any };
+
   id: string;
   type: "custom";
   renderingMode?: "2d" | "3d" | undefined;
@@ -83,24 +84,33 @@ export class CustomIFCLayer
     // );
     // this.scene.add(gltf.scene);
 
-    //get gltf from dexie
-    const modelName = localStorage.getItem(
-      localStr.IFCmodelKey
-    );
-    if (modelName === null) return;
-    const modelData = await findIFCModel(
-      modelName
-    );
-    if (modelData === undefined) return;
-
+    //method 1)get gltf from dexie
+    // const modelName = localStorage.getItem(
+    //   localStr.IFCmodelKey
+    // );
+    // if (modelName === null) return;
+    // const modelData = await findIFCModel(
+    //   modelName
+    // );
+    // if (modelData === undefined) return;
+    // const gltf = await loader.parseAsync(
+    //   JSON.stringify(
+    //     modelData.gltf, // CustomIFCLayer.gltfData,
+    //     null,
+    //     2
+    //   ),
+    //   ""
+    // );
+    //method 2:
     const gltf = await loader.parseAsync(
       JSON.stringify(
-        modelData.gltf, // CustomIFCLayer.gltfData,
+        CustomIFCLayer.gltfData,
         null,
         2
       ),
       ""
     );
+
     const mesh = gltf.scene;
     this.scene.add(mesh);
     //...

@@ -7,6 +7,7 @@ import { MapBoxTool } from "../../../mapboxViewer/domain/entities/mapBox_tool";
 import { frag_loader } from "../entities/fragment-loader";
 import { MfragmentHightlighter } from "../entities/fragment-highlighter";
 import { navigation } from "../entities/plan-navigation";
+import { LogLevel } from "web-ifc";
 
 //1) Components is the main object of the library [we name it "viewer"]
 const viewer = new OBC.Components();
@@ -56,13 +57,13 @@ const postproduction =
 postproduction.enabled = true;
 
 //4) Extra components
-const grid = new OBC.SimpleGrid(
-  viewer,
-  new THREE.Color(0x666666)
-);
-postproduction.customEffects.excludedMeshes.push(
-  grid.get()
-);
+// const grid = new OBC.SimpleGrid(
+//   viewer,
+//   new THREE.Color(0x666666)
+// );
+// postproduction.customEffects.excludedMeshes.push(
+//   grid.get()
+// );
 
 const culler = new OBC.ScreenCuller(viewer);
 await culler.setup();
@@ -80,11 +81,11 @@ ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN =
   true;
 ifcLoader.settings.webIfc.OPTIMIZE_PROFILES =
   true;
-// ifcLoader.settings.wasm = {
-//   logLevel: LogLevel.LOG_LEVEL_OFF,
-//   absolute: true,
-//   path: "https://unpkg.com/web-ifc@0.0.44/",
-// };
+ifcLoader.settings.wasm = {
+  logLevel: LogLevel.LOG_LEVEL_OFF,
+  absolute: true,
+  path: "https://unpkg.com/web-ifc@0.0.44/",
+};
 await ifcLoader.setup();
 
 new OBC.FragmentHighlighter(viewer);

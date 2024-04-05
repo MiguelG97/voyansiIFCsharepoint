@@ -3,52 +3,69 @@ import {
   IfcProperties,
 } from "bim-fragment";
 import * as OBC from "openbim-components";
-
+import * as WEBIFC from "web-ifc";
 export class Mifcprops {
   static async getIFCcoordinates(
-    properties: IfcProperties,
-    model: FragmentsGroup
+    model: FragmentsGroup,
+    properties?: IfcProperties | undefined
   ): Promise<[number, number] | null> {
-    let ifcsiteprops = null;
-    for (const [key, value] of Object.entries(
-      properties
-    )) {
-      if (
-        value["Name"] !== undefined &&
-        value["Name"] !== null
-      ) {
+    const ifcsiteprops =
+      await model.getAllPropertiesOfType(
+        WEBIFC.IFCSITE
+      );
+
+    // let ifcsiteprops = null;
+    // for (const [key, value] of Object.entries(
+    //   properties
+    // )) {
+    //   if (
+    //     value["Name"] !== undefined &&
+    //     value["Name"] !== null
+    //   ) {
+    //     if (
+    //       value["Name"]["value"] === "Default"
+    //     ) {
+    //       ifcsiteprops =
+    //         await model.getProperties(
+    //           Number(key)
+    //         );
+    //       break;
+    //     }
+    //   }
+    // }
+    if (ifcsiteprops !== null) {
+      console.log(ifcsiteprops);
+      for (const ifcsiteid of Object.keys(
+        ifcsiteprops
+      )) {
+        const ifcsiteItem =
+          ifcsiteprops[Number(ifcsiteid)];
         if (
-          value["Name"]["value"] === "Default"
+          ifcsiteItem["RefLatitude"] &&
+          ifcsiteItem["RefLongitude"]
         ) {
-          ifcsiteprops =
-            await model.getProperties(
-              Number(key)
+          const lat =
+            ifcsiteItem["RefLatitude"]["value"];
+          const long =
+            ifcsiteItem["RefLongitude"]["value"];
+
+          const latDecimal =
+            Mifcprops.convertToDecimal(
+              lat[0],
+              lat[1],
+              lat[2],
+              lat[3]
             );
-          break;
+          const longDecimal =
+            Mifcprops.convertToDecimal(
+              long[0],
+              long[1],
+              long[2],
+              long[3]
+            );
+          return [latDecimal, longDecimal];
         }
       }
-    }
-    if (ifcsiteprops !== null) {
-      const lat =
-        ifcsiteprops["RefLatitude"]["value"];
-      const long =
-        ifcsiteprops["RefLongitude"]["value"];
-
-      const latDecimal =
-        Mifcprops.convertToDecimal(
-          lat[0],
-          lat[1],
-          lat[2],
-          lat[3]
-        );
-      const longDecimal =
-        Mifcprops.convertToDecimal(
-          long[0],
-          long[1],
-          long[2],
-          long[3]
-        );
-      return [latDecimal, longDecimal];
     }
 
     return null;
