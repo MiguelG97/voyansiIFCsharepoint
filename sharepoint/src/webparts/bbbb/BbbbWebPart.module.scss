@@ -1,0 +1,15 @@
+@import "~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss";
+// @import "https://miguelg97.github.io/mapbox3dmodel/public/utils/ifcjs.css";
+@import "https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css";
+// constrain to the sharepoint layout
+.sharepointViewer {
+  height: 30rem !important;
+  width: 100% !important;
+}
+.obc-viewer
+  :is(
+    .data-\[active\=true\]\:text-black[data-active="true"]
+  )
+  .material-icons {
+  color: white !important;
+}

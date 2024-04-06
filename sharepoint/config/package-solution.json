@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "ifcviewer",
+    "id": "636ea91a-de54-4bdd-b80d-5bf77eb21f5b",
+    "version": "1.0.0.11",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.18.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "bbbb description"
+      },
+      "longDescription": {
+        "default": "bbbb description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "bbbb Feature",
+        "description": "The feature that activates elements of the bbbb solution.",
+        "id": "77f1c644-e041-419d-ae9a-5f249cfdac20",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/ifcviewer.sppkg"
+  }
+}

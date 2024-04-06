@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>OpenBIM App</title>
+    <link
+      rel="stylesheet"
+      href="src/module/index.css"
+    />
+    <link
+      rel="stylesheet"
+      href="src/module/bimIFCviewer/presentation/styles/measurements.css"
+    />
+    <!-- <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css"
+      rel="stylesheet"
+    /> -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <!-- <style>
+      @tailwind base;
+      @tailwind components;
+      @tailwind utilities;
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      #sharepoint-viewer-app {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+    </style> -->
+  </head>
+  <body class="flex flex-col relative">
+    <div id="sharepoint-viewer-app">
+      <!-- <div
+        id="IFC-panel-container"
+        class="panelContainer"
+      >
+        <h2 class="titleContainer">IFC MODELS</h2>
+        <div class="hseparator"></div>
+        <ul id="ifcList">
+        </ul>
+        <div id="loadbutton">Load</div>
+      </div> -->
+    </div>
+    <div
+      id="map"
+      class="top-0 z-[2] absolute"
+    ></div>
+
+    <script
+      type="module"
+      src="/src/module/bimIFCviewer/domain/usecases/bim-viewer.ts"
+    ></script>
+  </body>
+</html>

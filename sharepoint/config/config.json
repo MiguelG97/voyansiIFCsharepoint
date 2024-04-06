@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "bbbb-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/bbbb/BbbbWebPart.js",
+          "manifest": "./src/webparts/bbbb/BbbbWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "BbbbWebPartStrings": "lib/webparts/bbbb/loc/{locale}.js"
+  }
+}
