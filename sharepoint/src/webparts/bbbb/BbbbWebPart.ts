@@ -63,7 +63,7 @@ ${styles["obc-viewer"]}
     head.appendChild(style);
 
     //iii) this is a div element!
-    let sharepointDiv = this.domElement;
+    const sharepointDiv = this.domElement;
     sharepointDiv.style.position = "relative";
 
     sharepointDiv.innerHTML = `
@@ -75,12 +75,14 @@ ${styles["obc-viewer"]}
     <div class="${styles.sharepointViewer} "
     id="sharepoint-viewer-app" >
     </div>
+    <input type="file" id="upload" />
     `;
   }
 
   protected onInit(): Promise<void> {
     setTimeout(async () => {
       // eslint-disable-next-line @microsoft/spfx/import-requires-chunk-name
+
       await import(
         //@ts-ignore
         /*webpackIgnore:true*/ "https://miguelg97.github.io/mapbox3dmodel/public/utils/ifcjs.js"
@@ -252,126 +254,36 @@ ${styles["obc-viewer"]}
         true
       );
 
-      // const delet = () => {
-      //   // eslint-disable-next-line guard-for-in
-      //   for (const index in childToolbar.children) {
-      //     const button: HTMLButtonElement =
-      //       childToolbar.children[
-      //         index
-      //       ] as HTMLButtonElement;
-      //     button?.addEventListener(
-      //       "click",
-      //       () => {
-      //         console.log("button click");
-      //         button.classList;
-      //       }
-      //     );
-
-      //     // eslint-disable-next-line guard-for-in
-      //     for (const key in button.children) {
-      //       const span = button.children[
-      //         key
-      //       ] as HTMLSpanElement;
-      //       if (
-      //         !(
-      //           span instanceof HTMLSpanElement
-      //         ) ||
-      //         span === undefined
-      //       )
-      //         continue;
-
-      //       if (
-      //         span.classList.contains(
-      //           "material-icons"
-      //         )
-      //       ) {
-      //         span.addEventListener(
-      //           "click",
-      //           () => {
-      //             console.log("span click");
-      //             span.classList;
-      //           }
-      //         );
-      //       }
-      //     }
-      //   }
-      // };
-
       window.dispatchEvent(new Event("resize"));
       await this.loadMultipleIFCfiles();
+
+      //development stuff
+      // const uploaded =
+      //   document.getElementById("upload");
+      // uploaded?.addEventListener(
+      //   "change",
+      //   async () => {
+      //     if (uploaded !== null) {
+      //       const inputs =
+      //         document.getElementById(
+      //           "upload"
+      //         ) as HTMLInputElement;
+      //       const file = inputs.files![0];
+      //       const buffer =
+      //         await file.arrayBuffer();
+      //       await this.uploadFragmentsToDocs(
+      //         file.name,
+      //         new Uint8Array(buffer),
+      //         undefined
+      //       );
+      //     }
+      //   }
+      // );
     }, 1000);
 
     return new Promise<void>((resolve) => {
-      // const docFiles =
-      //   "_api/web/lists/GetByTitle('Documents')/Files";
-      // const baseUrl =
-      //   this.context.pageContext.web.absoluteUrl;
-      // const url = `${baseUrl}/${docFiles}`;
-      // const http = this.context.spHttpClient;
-      // const config =
-      //   SPHttpClient.configurations.v1;
-
-      // http
-      //   .get(url, config)
-      //   .then(async (response) => response.json())
-      //   .then((documents) => {
-      //     console.log(documents);
-      //   })
-      //   .catch((x) =>
-      //     console.log("error here", x)
-      //   );
       return resolve();
     });
-  }
-
-  protected async loadFirstFile(): Promise<void> {
-    const docFiles =
-      "_api/web/lists/GetByTitle('Documents')/Files";
-    const baseUrl =
-      this.context.pageContext.web.absoluteUrl;
-    const url = `${baseUrl}/${docFiles}`; //graph.microsoft.com/v1.0.....
-    const http = this.context.spHttpClient;
-    const config = SPHttpClient.configurations.v1;
-    const response = await http.get(url, config);
-    const documents = await response.json();
-    if (documents.value.length) {
-      let url = window.location.href;
-      const texts = url.split("/");
-      url = texts[texts.length - 1];
-      url = url.replace(".aspx", "");
-
-      for (const val of documents.value) {
-        const ifcName = val.Name.replace(
-          ".ifc",
-          ""
-        );
-
-        if (url.includes(ifcName)) {
-          // console.log(
-          //   "url.includes(ifcName)",
-          //   url
-          // );
-          const fetched = await fetch(val.Url);
-          const buffer =
-            await fetched.arrayBuffer();
-          const data = new Uint8Array(buffer);
-          const eventList = new CustomEvent(
-            "loadIFCData",
-            {
-              detail: {
-                data: {
-                  Name: ifcName,
-                  bufferArr: data,
-                },
-                name: "loadIFCData",
-              },
-            }
-          );
-          window.dispatchEvent(eventList);
-          break;
-        }
-      }
-    }
   }
 
   protected async loadMultipleIFCfiles(): Promise<void> {
@@ -459,6 +371,8 @@ ${styles["obc-viewer"]}
           }
         }
 
+        console.log("THE FRAG DATA: ", fragData);
+        console.log("type: fragments ");
         const eventList = new CustomEvent(
           "loadIFCData",
           {
@@ -492,6 +406,8 @@ ${styles["obc-viewer"]}
             fragData[ifcName + ".ifc"] = data;
           }
         }
+        console.log("THE FRAG DATA: ", fragData);
+        console.log("type: IFC ");
         const eventList = new CustomEvent(
           "loadIFCData",
           {
@@ -506,6 +422,37 @@ ${styles["obc-viewer"]}
         );
         window.dispatchEvent(eventList);
       }
+    }
+  }
+
+  protected async uploadFragmentsToDocs(
+    fileName: string,
+    arraybuffer: Uint8Array | undefined,
+    json?: any
+  ): Promise<void> {
+    try {
+      const baseUrl = `${this.context.pageContext.web.absoluteUrl}`;
+      //To access a specific site, use the following construction: https://{site_url}/_api/web
+      const fileUpload = `_api/web/lists/GetByTitle('Documents')/RootFolder/Files/Add(url='${fileName}',overwrite=true)`;
+      const url = `${baseUrl}/${fileUpload}`;
+      const response =
+        await this.context.spHttpClient.post(
+          url,
+          SPHttpClient.configurations.v1,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body:
+              arraybuffer !== undefined
+                ? arraybuffer
+                : json,
+          }
+        );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   }
 }
