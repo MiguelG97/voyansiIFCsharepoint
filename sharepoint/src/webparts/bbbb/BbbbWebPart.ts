@@ -75,17 +75,27 @@ ${styles["obc-viewer"]}
     <div class="${styles.sharepointViewer} "
     id="sharepoint-viewer-app" >
     </div>
-    <input type="file" id="upload" />
     `;
+    //    <input type="file" id="upload" />
   }
 
   protected onInit(): Promise<void> {
     setTimeout(async () => {
+      console.log(
+        this.context.pageContext.web.absoluteUrl,
+        this.context.pageContext.web
+          .serverRelativeUrl //this one returns /sites/VoyansiIFC
+      );
       // eslint-disable-next-line @microsoft/spfx/import-requires-chunk-name
 
+      // await import(
+      //   //@ts-ignore
+      //   /*webpackIgnore:true*/ "https://miguelg97.github.io/mapbox3dmodel/public/utils/ifcjs.js"
+      // );
+      //We need to figure out which site it's being used!!
       await import(
         //@ts-ignore
-        /*webpackIgnore:true*/ "https://miguelg97.github.io/mapbox3dmodel/public/utils/ifcjs.js"
+        /*webpackIgnore:true*/ "https://voyansi038.sharepoint.com/sites/VoyansiIFC/Shared%20Documents/ifcjs.js"
       );
       document.body.style.display = "relative";
 
@@ -297,6 +307,7 @@ ${styles["obc-viewer"]}
     const response = await http.get(url, config);
     const documents = await response.json();
 
+    console.log("the url", url);
     if (documents.value.length) {
       let url = window.location.href;
       const texts = url.split("/");
